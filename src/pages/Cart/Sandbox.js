@@ -57,6 +57,7 @@ function SandboxApp() {
             quantity: 1, // Default quantity
             maxQuantity: item.maxQuantity,
             url: item.url,
+            check: true,
         };
 
         let currentCart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -122,20 +123,9 @@ function SandboxApp() {
             });
     };
 
-    // 로컬스토리지에서 항목 삭제
-    const removeFromLocalStorage = (optionId) => {
-        const updatedCart = cart.filter(item => item.optionId !== optionId);
-        localStorage.setItem('cart', JSON.stringify(updatedCart));
-        setCart(updatedCart); // Update cart state for syncing
-        if (isLogin) {
-            syncWithLocal(updatedCart); // Sync changes to the server
-        }
-        showModalMessage(`장바구니에서 삭제되었습니다. ${optionId}`);
-    };
-
     return (
         <section>
-            <div className="container h-100">
+            <div className="container h-100 card">
                 <div className="row d-flex justify-content-center align-items-center h-100">
                     <div className="card-body p-0">
                         <div className="row g-0">
@@ -148,19 +138,16 @@ function SandboxApp() {
                                                     <img src={item.url} className="card-img-top" alt="Item Image"/>
                                                     <div className="card-body">
                                                         <h3 className="card-title">{item.name}</h3>
-                                                        <p className="card-text">{item.price} 원</p>
-                                                        <p className="card-text">OptionId : {item.optionId}</p>
-
-                                                        <button className="btn btn-dark btn-block btn-md gap-4 m-2"
+                                                        <h6>{item.optionName}</h6>
+                                                        <h6>{item.price}원</h6>
+                                                        <h6>OptionId : {item.optionId}</h6>
+                                                        <div className="d-flex justify-content-center">
+                                                            <button
+                                                                className="btn btn-dark btn-block btn-md col-xl-8 gap-4 m-2 "
                                                                 onClick={() => addToCart(item)}>
-                                                            Add
-                                                        </button>
-
-                                                        {/* 개별 항목 삭제 버튼 추가 */}
-                                                        <button className="btn btn-dark btn-block btn-md gap-4 m-2"
-                                                                onClick={() => removeFromLocalStorage(item.optionId)}>
-                                                            Remove
-                                                        </button>
+                                                                Add
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -177,7 +164,8 @@ function SandboxApp() {
                                     </button>
 
                                     {/* 로그인 토글 및 상태 확인 버튼 */}
-                                    <button className="btn btn-dark btn-block btn-lg gap-4 m-2" onClick={handleLoginToggle}>
+                                    <button className="btn btn-dark btn-block btn-lg gap-4 m-2"
+                                            onClick={handleLoginToggle}>
                                         {isLogin ? '로그아웃' : '로그인'}
                                     </button>
                                 </div>
@@ -187,12 +175,10 @@ function SandboxApp() {
                 </div>
             </div>
 
-            {/* 모달 컴포넌트 */}
             <Modal
                 show={showModal}
                 onHide={() => setShowModal(false)}
-                backdrop={false}
-            >
+                backdrop={false}>
                 <Modal.Body className="bg-dark text-white">
                     {modalMessage}
                 </Modal.Body>
