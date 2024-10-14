@@ -10,7 +10,7 @@ import Login from "../User/login";
 import Signup from '../User/signup';
 import Logout from '../User/logout';
 import OrderPage from '../Order/OrderPage';
-import Main from "../Product/Main";
+import ProductAdmin from '../Admin/ProductAdmin';
 
 function AppRouter() {
     return (
@@ -26,6 +26,7 @@ function AppRouter() {
             <Route path="/logout" element={<Logout />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/order" element={<OrderPage />} />
+            <Route path="/admin/products" element={<ProductAdmin />} />
         </Routes>
     );
 }

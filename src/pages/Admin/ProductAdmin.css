@@ -1,0 +1,29 @@
+/* 관리자 상품 관리 페이지 */
+.admin-product-page {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* 상품 목록 스타일 */
+.product-list h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* 상품 항목 스타일 */
+.list-group-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    transition: box-shadow 0.3s ease;
+}
+
+.list-group-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.product-name {
+    font-size: 1.25rem;
+    color: #333;
+}
