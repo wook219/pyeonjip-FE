@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './login.css';
+import './User.css';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -47,22 +47,26 @@ function Login() {
         }
     };
 
+    const handleBack = () => {
+        navigate(-1);
+    };
+
     return (
-        <div className="container-user h-100 d-flex justify-content-center align-items-center">
+        <div className="user-container h-100 d-flex justify-content-center align-items-center">
             <div className="col-md-6">
                 <div className="d-flex justify-content-between align-items-center">
-                    <h3 className="text-left mb-1">LOGIN</h3>
+                    <h3 className="text-left mb-1">로그인</h3>
                     <div className="user-link">
-                        <a href="/" className="text-muted">뒤로가기</a>
+                        <a href="#" onClick={handleBack} className="text-muted">뒤로가기</a>
                     </div>
                 </div>
                 <hr />
                 <form onSubmit={handleLogin}>
                     <div className="form-group mb-3">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="email">이메일</label>
                         <input
                             type="email"
-                            className="form-control"
+                            className="form-control user-form-control"
                             id="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -70,10 +74,10 @@ function Login() {
                         />
                     </div>
                     <div className="form-group mb-3">
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="password">비밀번호</label>
                         <input
                             type="password"
-                            className="form-control"
+                            className="form-control user-form-control"
                             id="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -81,15 +85,15 @@ function Login() {
                         />
                     </div>
                     {errorMessage && <p className="text-danger">{errorMessage}</p>}
-                    
+
                     <div className="d-flex justify-content-between align-items-center">
                         <div className="user-link">
-                            <a href="/find-account">계정 찾기</a>
+                            <a href="/find">계정 찾기</a>
                             <a href="/reset-password">비밀번호 재설정</a>
                             <a href="/signup">회원가입</a>
                         </div>
                         <div>
-                            <button type="submit" className="btn-user btn-sm user-btn">로그인</button>
+                            <button type="submit" className="btn-sm user-btn">로그인</button>
                         </div>
                     </div>
                 </form>
