@@ -12,6 +12,7 @@ function ProductDetailCreate() {
         quantity: 0,
         mainImage: ''
     });
+    const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
 
     // 입력값 변경 핸들러
     const handleChange = (e) => {
@@ -23,31 +24,39 @@ function ProductDetailCreate() {
     };
 
     // 폼 제출 핸들러 (옵션 추가)
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const token = localStorage.getItem('token'); // 저장된 JWT 토큰 가져오기
-        axiosInstance.post(`/api/admin/products/${productId}/details`, option, {
-            headers: {
-                'Authorization': `Bearer ${token}`, // Authorization 헤더 추가
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => {
-                toast.success('옵션이 성공적으로 추가되었습니다.', {
-                    position: "top-center",
-                    autoClose: 2000,
-                });
-                navigate(`/admin/edit-product/${productId}`); // 옵션 목록 페이지로 이동
-            })
-            .catch(error => {
-                console.error('옵션 추가 중 오류가 발생했습니다:', error);
-                toast.error('옵션 추가 중 오류가 발생했습니다.', {
-                    position: "top-center",
-                    autoClose: 2000,
-                });
 
+        try {
+            const response = await fetch(`BASE_URL+/api/admin/products/${productId}/details`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Authorization 헤더 추가
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(option) // 전송할 옵션 데이터를 JSON 문자열로 변환
             });
+
+            if (!response.ok) {
+                throw new Error('옵션 추가 중 오류가 발생했습니다.');
+            }
+
+            const responseData = await response.json();
+            toast.success('옵션이 성공적으로 추가되었습니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
+            navigate(`/admin/edit-product/${productId}`); // 옵션 목록 페이지로 이동
+
+        } catch (error) {
+            console.error('옵션 추가 중 오류가 발생했습니다:', error);
+            toast.error('옵션 추가 중 오류가 발생했습니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
+        }
     };
 
     return (
@@ -106,3 +115,4 @@ function ProductDetailCreate() {
 }
 
 export default ProductDetailCreate;
+

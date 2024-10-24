@@ -9,14 +9,23 @@ function ProductAdmin() {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [currentPage, setCurrentPage] = useState(0);
     const pageSize = 5;
+    const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
 
     // 대카테고리 목록 조회
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axiosInstance.get('/api/category');
-                console.log("Fetched categories:", response.data);
-                setCategories(response.data);
+                const response = await fetch(BASE_URL+'/api/category', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                const data = await response.json();  // JSON 응답을 파싱
+                console.log("Fetched categories:", data);
+                setCategories(data);  // 받아온 카테고리 데이터를 상태에 저장
             } catch (error) {
                 console.error("Error fetching categories:", error);
             }
@@ -29,9 +38,21 @@ function ProductAdmin() {
     useEffect(() => {
         const fetchAllProducts = async () => {
             try {
-                const response = await axiosInstance.get('/api/products/all');
-                console.log("Fetched all products:", response.data);
-                setProducts(response.data);
+                const response = await fetch(BASE_URL+'/api/products/all', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                console.log("Fetched all products:", data);
+                setProducts(data);
             } catch (error) {
                 console.error("Error fetching all products:", error);
             }
@@ -47,14 +68,40 @@ function ProductAdmin() {
         const fetchProductsByCategory = async () => {
             try {
                 if (selectedCategory) {
-                    const categoryResponse = await axiosInstance.get(`/api/category?categoryIds=${selectedCategory}`);
-                    const categoryIds = categoryResponse.data;
+                    // 카테고리 데이터 가져오기
+                    const categoryResponse = await fetch(BASE_URL+`/api/category?categoryIds=${selectedCategory}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                    });
 
+                    if (!categoryResponse.ok) {
+                        throw new Error('Failed to fetch category data');
+                    }
+
+                    const categoryIds = await categoryResponse.json();
+
+                    // 쿼리 파라미터 구성
                     const queryParams = categoryIds.map(id => `categoryIds=${id}`).join('&');
-                    const productResponse = await axiosInstance.get(`/api/products/categories?${queryParams}`);
-                    const products = productResponse.data;
 
-                    setProducts(products);
+                    // 제품 데이터 가져오기
+                    const productResponse = await fetch(BASE_URL+`/api/products/categories?${queryParams}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    if (!productResponse.ok) {
+                        throw new Error('Failed to fetch product data');
+                    }
+
+                    const products = await productResponse.json();
+
+                    setProducts(products);  // 가져온 제품 데이터를 상태에 저장
                 }
             } catch (error) {
                 console.error('Error fetching products by category:', error);
@@ -124,3 +171,4 @@ function ProductAdmin() {
 }
 
 export default ProductAdmin;
+
