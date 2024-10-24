@@ -4,10 +4,8 @@ const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
 
 const handleErrorResponse = async (error) => {
     if (error.response) {
-        throw new Error(error.response.data.message || '알 수 없는 에러가 발생했습니다.');
+        throw error;
     }
-    // 네트워크 오류 처리
-    throw new Error('네트워크 오류가 발생했습니다.');
 };
 
 // 모든 카테고리 가져오기
@@ -89,7 +87,8 @@ export const fetchUpdateOrder = async (orderId, deliveryStatus) => {
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('access')}`,
             'Content-Type': 'application/json',
-        }
+        },
+        body: JSON.stringify({ deliveryStatus })
     });
     if (!response.ok) {
         await handleErrorResponse(response);
