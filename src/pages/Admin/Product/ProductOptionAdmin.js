@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import OptionList from './ProductOptionList';
 import ProductImageList from './ProductImageList';
-import axiosInstance from '../../../utils/axiosInstance'; // axiosInstance 임포트
 import './ProductAdmin.css';
 import {toast} from "react-toastify";
 
@@ -140,22 +139,96 @@ function ProductOptionAdmin() {
         );
     };
 
-    const handleBulkDeleteOptions = () => {
-        setOptions(options.filter(option => !selectedOptions.includes(option.id)));
-        setSelectedOptions([]);
+    // 옵션 삭제 서버 연동
+    const handleBulkDeleteOptions = async () => {
+        try {
+            await Promise.all(
+                selectedOptions.map(async (optionId) => {
+                    await fetch(`${BASE_URL}/api/admin/products/details/${optionId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                })
+            );
+
+            // 삭제 성공 후 프론트엔드에서 상태 업데이트
+            setOptions(options.filter(option => !selectedOptions.includes(option.id)));
+            setSelectedOptions([]);
+            toast.success('옵션이 성공적으로 삭제되었습니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
+        } catch (error) {
+            console.error("옵션 삭제 중 오류 발생: ", error);
+            toast.error('옵션 삭제 중 오류가 발생했습니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
+        }
     };
 
-    const handleBulkDeleteImages = () => {
-        setImages(images.filter(image => !selectedImages.includes(image.id)));
-        setSelectedImages([]);
+    // 이미지 삭제 서버 연동
+    const handleBulkDeleteImages = async () => {
+        try {
+            await Promise.all(
+                selectedImages.map(async (imageId) => {
+                    await fetch(`${BASE_URL}/api/admin/products/images/${imageId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                })
+            );
+
+            // 삭제 성공 후 프론트엔드에서 상태 업데이트
+            setImages(images.filter(image => !selectedImages.includes(image.id)));
+            setSelectedImages([]);
+            toast.success('이미지가 성공적으로 삭제되었습니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
+        } catch (error) {
+            console.error("이미지 삭제 중 오류 발생: ", error);
+            toast.error('이미지 삭제 중 오류가 발생했습니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
+        }
     };
 
-    const handleAddImage = (newImageUrl) => {
-        const newImage = {
-            id: images.length + 1,
-            imageUrl: newImageUrl
-        };
-        setImages([...images, newImage]);
+    const handleAddImage = async (newImageUrl) => {
+        try {
+            const response = await fetch(`${BASE_URL}/api/admin/products/${productId}/images`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ imageUrl: newImageUrl }) // 서버에 이미지 URL 전달
+            });
+
+            if (!response.ok) {
+                throw new Error('이미지 추가 실패');
+            }
+
+            const addedImage = await response.json(); // 추가된 이미지 정보
+            setImages([...images, addedImage]); // 프론트엔드 상태 업데이트
+            toast.success('이미지가 성공적으로 추가되었습니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
+        } catch (error) {
+            console.error("이미지 추가 중 오류 발생:", error);
+            toast.error('이미지 추가 중 오류가 발생했습니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
+        }
     };
 
     const handleImageUrlChange = (index, newUrl) => {
@@ -257,4 +330,3 @@ function ProductOptionAdmin() {
 }
 
 export default ProductOptionAdmin;
-
