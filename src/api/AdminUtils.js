@@ -95,6 +95,7 @@ export const fetchUpdateOrder = async (orderId, deliveryStatus) => {
                 'Authorization': `Bearer ${localStorage.getItem('access')}`,
                 'Content-Type': 'application/json',
             },
+            body: JSON.stringify({ deliveryStatus }),
         });
         return await response.json();
     } catch (error) {
