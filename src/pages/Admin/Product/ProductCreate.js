@@ -13,6 +13,7 @@ function CreateProduct() {
     const [productImages, setProductImages] = useState([{ imageUrl: '' }]); // 상품 이미지 관리
     const navigate = useNavigate();
     const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
+    const token = localStorage.getItem('access'); // 저장된 JWT 토큰 가져오기
 
     // 옵션 필드의 값 변경을 처리하는 함수
     const handleOptionChange = (index, field, value) => {
@@ -59,6 +60,7 @@ function CreateProduct() {
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`
                     },
                 });
 
@@ -103,7 +105,8 @@ function CreateProduct() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(productData)  // 데이터를 JSON으로 변환하여 전송
             });
