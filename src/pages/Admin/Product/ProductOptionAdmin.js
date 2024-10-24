@@ -283,7 +283,7 @@ function ProductOptionAdmin() {
                     </select>
                 </div>
 
-                <div className="text-end"> {/* 버튼을 오른쪽으로 정렬하기 위한 클래스 추가 */}
+                <div className="text-end">
                     <button className="btn btn-secondary" onClick={handleProductUpdate}>
                         상품 정보 수정
                     </button>
@@ -312,6 +312,24 @@ function ProductOptionAdmin() {
 
             <hr />
 
+            {/* 이미지 추가 입력창 */}
+            <div className="mt-4">
+                <h4>새로운 이미지 추가</h4>
+                <input
+                    type="text"
+                    value={newImageUrl}
+                    onChange={(e) => setNewImageUrl(e.target.value)}
+                    placeholder="이미지 URL 입력"
+                    style={{ marginRight: '10px', width: '250px' }}
+                />
+                <button
+                    className="btn-black"
+                    onClick={handleAddImage}
+                >
+                    이미지 추가
+                </button>
+            </div>
+
             {/* 이미지 목록 */}
             {images.length > 0 ? (
                 <ProductImageList
@@ -319,7 +337,6 @@ function ProductOptionAdmin() {
                     selectedImages={selectedImages}
                     handleCheckboxChange={handleImageCheckboxChange}
                     handleBulkDelete={handleBulkDeleteImages}
-                    handleAddImage={handleAddImage}
                     handleImageUrlChange={handleImageUrlChange}
                 />
             ) : (
