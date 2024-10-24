@@ -21,7 +21,7 @@ function MyPage() {
             console.log('요청 시작');
             const { data } = await axiosInstance.get(`/api/user/mypage?email=${email}`);
             setUser(data);
-            console.log('데이터 가져오기 완료');
+            console.log('유저 데이터: ', data);
         } catch (error) {
             if (error.response?.status === 401) {
                 setErrorMessage('로그인이 필요합니다.');
@@ -282,7 +282,7 @@ function MyPage() {
     // 나의 등급 탭
     const renderUserGrade = () => (
         <div style={{ fontWeight: 'bold' }}>
-            {gradeInfo ? (
+            {user && gradeInfo ? (
                 <p>
                     {user.name}님의 현재 등급은
                     <span style={{ color: 'lightgreen', textDecoration: 'underline' }}> {gradeInfo.grade} </span>
