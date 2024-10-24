@@ -15,6 +15,7 @@ function ProductOptionAdmin() {
     const [selectedImages, setSelectedImages] = useState([]);
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('');
+    const token = localStorage.getItem('access'); // 저장된 JWT 토큰 가져오기
 
     const [product, setProduct] = useState({
         name: '',
@@ -33,6 +34,7 @@ function ProductOptionAdmin() {
                         headers: {
                             'Content-Type': 'application/json',
                             'Accept': 'application/json',
+                            'Authorization': `Bearer ${token}`, // Authorization 헤더 추가
                         },
                     });
                     if (!optionsResponse.ok) {
@@ -61,6 +63,7 @@ function ProductOptionAdmin() {
                         headers: {
                             'Content-Type': 'application/json',
                             'Accept': 'application/json',
+                            'Authorization': `Bearer ${token}`, // Authorization 헤더 추가
                         },
                     });
                     if (!productResponse.ok) {
@@ -76,6 +79,7 @@ function ProductOptionAdmin() {
                         headers: {
                             'Content-Type': 'application/json',
                             'Accept': 'application/json',
+                            'Authorization': `Bearer ${token}`, // Authorization 헤더 추가
                         },
                     });
                     if (!categoriesResponse.ok) {
@@ -102,6 +106,7 @@ function ProductOptionAdmin() {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`, // Authorization 헤더 추가
                 },
                 body: JSON.stringify(updatedProduct), // JSON 형식으로 변환하여 전송
             });
