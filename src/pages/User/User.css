@@ -61,14 +61,14 @@
 /* 특정 페이지로 이동하는 링크들 한 번에 관리 */
 .user-link {
     font-size: 14px;
-    color: #6c757d; /* text-muted 대체 */
+    color: #6c757d;
     margin-right: 15px;
     text-decoration: none;
 }
 
 .user-link a {
     font-size: 12px;
-    color: #6c757d; /* text-muted 대체 */
+    color: #6c757d;
     margin-right: 15px;
     text-decoration: none;
 }
@@ -132,7 +132,7 @@
     min-height: 100vh;
     padding: 20px;
     position: relative;
-    top: 30px;  /* top을 양수로 바꿔서 전체를 더 하단으로 이동 */
+    top: 30px;
 }
 
 .user-mypage-content {
@@ -141,10 +141,10 @@
 }
 
 .user-header {
-    position: sticky;
-    top: 20px; /* top을 조정해서 h3의 위치를 하단으로 내림 */
+    position: relative;
+    top: 20px;
     background-color: #fff;
-    padding: 100px 0 0 0; /* padding-bottom 값을 추가해 간격을 조절 */
+    padding: 100px 0 0 0;
     z-index: 10;
 }
 
