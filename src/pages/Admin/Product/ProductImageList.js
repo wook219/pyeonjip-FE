@@ -60,24 +60,6 @@ function ProductImageList({ images, selectedImages, handleCheckboxChange, handle
             ) : (
                 <p className="text-muted">등록된 이미지가 없습니다.</p>
             )}
-
-            {/* 이미지 추가 입력창 - 항상 표시 */}
-            <div className="mt-4">
-                <h4>새로운 이미지 추가</h4>
-                <input
-                    type="text"
-                    value={newImageUrl}
-                    onChange={(e) => setNewImageUrl(e.target.value)}
-                    placeholder="이미지 URL 입력"
-                    style={{ marginRight: '10px', width: '250px' }}
-                />
-                <button
-                    className="btn-black"
-                    onClick={handleAddNewImage}
-                >
-                    이미지 추가
-                </button>
-            </div>
         </div>
     );
 }
