@@ -39,7 +39,6 @@ function ProductList({ products, setProducts }) {
 
     // 삭제 처리 함수
     const handleDelete = async (productId) => {
-        const token = localStorage.getItem('token');
         if (window.confirm('정말로 이 상품을 삭제하시겠습니까?')) {
             try {
                 // 상품 삭제 요청

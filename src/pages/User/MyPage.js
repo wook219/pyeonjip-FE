@@ -18,10 +18,22 @@ function MyPage() {
 
     const fetchUser = async (email) => {
         try {
-            console.log('요청 시작');
-            const { data } = await axiosInstance.get(`/api/user/mypage?email=${email}`);
+            const token = localStorage.getItem('access');
+
+            const response = await fetch(`https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io/api/user/mypage?email=${email}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization' : `Bearer ${token}`,
+                    'Content-Type' : 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('유저 정보를 불러오는 데 실패했습니다.');
+            }
+            const data = await response.json();
             setUser(data);
-            console.log('유저 데이터: ', data);
+
         } catch (error) {
             if (error.response?.status === 401) {
                 setErrorMessage('로그인이 필요합니다.');
@@ -164,21 +176,31 @@ function MyPage() {
         }
 
         try {
-            const response = await axiosInstance.put(endpoint, {
-                [field]: updatedValue
+            const token = localStorage.getItem('access'); // Access token 가져오기
+            const response = await fetch(endpoint, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`, // 인증 헤더 추가
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    [field]: updatedValue,
+                }),
             });
 
-            if (response.status === 200) {
+            if (response.ok) {
                 alert(`${field}이(가) 성공적으로 수정되었습니다.`);
-                fetchUser(email);
+                fetchUser(email); // 수정 후 유저 정보 갱신
             } else {
-                alert('수정하는 중 문제가 발생했습니다.');
+                const errorData = await response.json();
+                alert(`수정하는 중 문제가 발생했습니다: ${errorData.message || 'Unknown error'}`);
             }
         } catch (error) {
             console.error('수정 요청 중 오류 발생:', error);
             alert('수정 요청에 실패했습니다.');
         }
     };
+
 
     // 가격 포맷 함수 
     const formatPriceWithWon = (price) => {
