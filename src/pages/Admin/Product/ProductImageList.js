@@ -20,6 +20,8 @@ function ProductImageList({ images, selectedImages, handleCheckboxChange, handle
     return (
         <div className="product-image-list">
             <h2 className="mb-4">상품 이미지 목록</h2>
+
+            {/* 이미지 목록 */}
             {images.length > 0 ? (
                 <div>
                     <ul className="list-group">
@@ -59,7 +61,7 @@ function ProductImageList({ images, selectedImages, handleCheckboxChange, handle
                 <p className="text-muted">등록된 이미지가 없습니다.</p>
             )}
 
-            {/* 이미지 추가 입력창 */}
+            {/* 이미지 추가 입력창 - 항상 표시 */}
             <div className="mt-4">
                 <h4>새로운 이미지 추가</h4>
                 <input
