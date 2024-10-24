@@ -32,7 +32,7 @@ const CategoryEditBox = ({
         if (selectedCategoryId) {
             const selectedCategory = categories.find(cat => cat.id === selectedCategoryId);
             if (selectedCategory) {
-                setSortOrder(selectedCategory.sort);
+                setSortOrder(selectedCategory.sort + 1);
             }
         }
     }, [selectedCategoryId, categories]);
@@ -49,6 +49,7 @@ const CategoryEditBox = ({
         // 부모 ID 조회
         const parentCategory = categories.find(cat => cat.name === newParentName);
         const newParentId = parentCategory ? parentCategory.id : '';
+
         setParentId(newParentId);
 
         // 자식 카테고리 길이 계산
@@ -76,7 +77,7 @@ const CategoryEditBox = ({
         const categoryData = {
             name: categoryName,
             parentId: parentId || null,
-            sort: parentId ? categories.find(cat => cat.id === parentId).children.length + 1: 1,
+            sort: parentId ? categories.find(cat => cat.id === parentId).children.length + 1 : 1,
         };
 
         try {
@@ -107,7 +108,7 @@ const CategoryEditBox = ({
         const hasChanges =
             categoryName !== selectedCategoryName ||
             (parentId || null) !== (categories.find(cat => cat.name === selectedParentName)?.id || null) ||
-            (sortOrder) !== (sort);
+            (sortOrder - 1) !== (sort - 1);
 
         if (!hasChanges) {
             toast.warn('수정할 사항이 없습니다.', {
@@ -122,7 +123,7 @@ const CategoryEditBox = ({
                 id: categoryId,
                 name: categoryName,
                 parentId: parentId || null,
-                sort: sortOrder,
+                sort: sortOrder-1,
             };
 
             await fetchUpdateCategory(categoryId, categoryData);
@@ -154,17 +155,12 @@ const CategoryEditBox = ({
         }
     };
 
-    const sortOptions = parentId ?
-    Array.from({ length: categories.find(cat => cat.id === parentId)?.children.length + 1 }, (_, index) => (
-        <option key={index} value={index}>
-            {index + 1}
-        </option>
-    ))
-    : Array.from({ length: categories.filter(cat => !cat.parentId).length + 1 }, (_, index) => (
-        <option key={index} value={index}>
+    const sortOptions = Array.from({ length: categoryId && !parentId ? sortOrder : childrenLength > 0 ? childrenLength : 1 }, (_, index) => (
+        <option key={index + 1} value={index + 1}>
             {index + 1}
         </option>
     ));
+
 
     return (
         <div className="admin-category-edit-box">
