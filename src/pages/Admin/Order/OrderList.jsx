@@ -21,6 +21,7 @@ function OrderList({ orders, onDelete }) {
                             key={order.id}
                             order={order}
                             onDelete={onDelete}
+                            deliveryStatus={order.deliveryStatus}
                         />
                     ))
                 ) : (
