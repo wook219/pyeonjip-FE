@@ -30,7 +30,7 @@ function ProductDetailCreate() {
         const token = localStorage.getItem('token'); // 저장된 JWT 토큰 가져오기
 
         try {
-            const response = await fetch(`BASE_URL+/api/admin/products/${productId}/details`, {
+            const response = await fetch(BASE_URL+`/api/admin/products/${productId}/details`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`, // Authorization 헤더 추가

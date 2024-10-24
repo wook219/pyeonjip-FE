@@ -41,7 +41,7 @@ function ProductList({ products, setProducts }) {
         if (window.confirm('정말로 이 상품을 삭제하시겠습니까?')) {
             try {
                 // 상품 삭제 요청
-                const deleteResponse = await fetch(`/api/admin/products/${productId}`, {
+                const deleteResponse = await fetch(BASE_URL+`/api/admin/products/${productId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -59,7 +59,7 @@ function ProductList({ products, setProducts }) {
                 });
 
                 // 삭제 후 전체 상품 목록 다시 가져오기
-                const productsResponse = await fetch('/api/products/all', {
+                const productsResponse = await fetch(BASE_URL+'/api/products/all', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
