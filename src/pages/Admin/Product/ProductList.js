@@ -7,6 +7,7 @@ function ProductList({ products, setProducts }) {
     const [categories, setCategories] = useState([]); // 카테고리 상태 추가
     const navigate = useNavigate();
     const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
+    const token = localStorage.getItem('access'); // 저장된 JWT 토큰 가져오기
 
     // 카테고리 목록을 가져오는 함수
     useEffect(() => {
@@ -17,6 +18,7 @@ function ProductList({ products, setProducts }) {
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`, // Authorization 헤더 추가
                     },
                 });
 
