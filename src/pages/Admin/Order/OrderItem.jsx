@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { fetchDeleteOrder, fetchUpdateOrder } from '../../../api/AdminUtils';
 import {toast} from "react-toastify";
 
-function OrderItem({ order, onDelete, deliveryStatus }) {
+function OrderItem({ order, onDelete }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
-    const [selectedDeliveryStatus, setSelectedDeliveryStatus] = useState(deliveryStatus);
+    const [selectedDeliveryStatus, setSelectedDeliveryStatus] = useState(order.deliveryStatus);
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -20,8 +20,8 @@ function OrderItem({ order, onDelete, deliveryStatus }) {
     };
 
     useEffect(() => {
-        setSelectedDeliveryStatus(deliveryStatus);
-    }, [deliveryStatus]);
+        setSelectedDeliveryStatus(order.deliveryStatus);
+    }, [order.deliveryStatus]);
 
     const toggleDetails = () => {
         setIsExpanded(prev => !prev);
@@ -39,7 +39,7 @@ function OrderItem({ order, onDelete, deliveryStatus }) {
         event.stopPropagation();
 
         // 현재 값과 선택한 값이 동일한지 체크
-        if (selectedDeliveryStatus === deliveryStatus) {
+        if (selectedDeliveryStatus === order.deliveryStatus) {
             toast.warn('수정할 사항이 없습니다.', {
                 position: "top-center",
                 autoClose: 2000,
