@@ -21,48 +21,102 @@ function ProductOptionAdmin() {
         description: '',
         category: ''
     });
+    const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
 
     useEffect(() => {
-        if (productId) {
-            // 옵션 불러오기
-            axiosInstance.get(`/api/products/${productId}/details`)
-                .then(response => setOptions(response.data))
-                .catch(error => console.error('Error fetching options:', error));
+        const fetchProductDetails = async () => {
+            if (productId) {
+                try {
+                    // 옵션 불러오기
+                    const optionsResponse = await fetch(BASE_URL+`/api/products/${productId}/details`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                    });
+                    if (!optionsResponse.ok) {
+                        throw new Error('Error fetching options');
+                    }
+                    const optionsData = await optionsResponse.json();
+                    setOptions(optionsData);
 
-            // 이미지 불러오기
-            axiosInstance.get(`/api/products/${productId}/images`)
-                .then(response => setImages(response.data))
-                .catch(error => console.error('Error fetching images:', error));
+                    // 이미지 불러오기
+                    const imagesResponse = await fetch(BASE_URL+`/api/products/${productId}/images`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                    });
+                    if (!imagesResponse.ok) {
+                        throw new Error('Error fetching images');
+                    }
+                    const imagesData = await imagesResponse.json();
+                    setImages(imagesData);
 
-            // 상품 정보 불러오기
-            axiosInstance.get(`/api/products/${productId}`)
-                .then(response => {
-                    setProduct(response.data);
-                    setSelectedCategory(response.data.categoryId);
-                })
-                .catch(error => console.error('Error fetching product:', error));
+                    // 상품 정보 불러오기
+                    const productResponse = await fetch(BASE_URL+`/api/products/${productId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                    });
+                    if (!productResponse.ok) {
+                        throw new Error('Error fetching product');
+                    }
+                    const productData = await productResponse.json();
+                    setProduct(productData);
+                    setSelectedCategory(productData.categoryId);
 
-            // 자식 카테고리만 불러오기
-            axiosInstance.get('/api/admin/category')
-                .then(response => setCategories(response.data))
-                .catch(error => console.error('Error fetching categories:', error));
-        }
+                    // 자식 카테고리만 불러오기
+                    const categoriesResponse = await fetch(BASE_URL+'/api/admin/category', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                    });
+                    if (!categoriesResponse.ok) {
+                        throw new Error('Error fetching categories');
+                    }
+                    const categoriesData = await categoriesResponse.json();
+                    setCategories(categoriesData);
+
+                } catch (error) {
+                    console.error(error.message);
+                }
+            }
+        };
+
+        fetchProductDetails();
     }, [productId]);
 
-    const handleProductUpdate = () => {
+    const handleProductUpdate = async () => {
         const updatedProduct = { ...product, categoryId: selectedCategory };
-        axiosInstance.put(`/api/admin/products/${productId}`, updatedProduct)
-            .then(response => {
-                if (response.status === 200) {
-                    toast.success('상품 정보가 성공적으로 수정되었습니다.', {
-                        position: "top-center",
-                        autoClose: 2000,
-                    });
-                } else {
-                    console.error('Error updating product');
-                }
-            })
-            .catch(error => console.error('Error updating product:', error));
+
+        try {
+            const response = await fetch(BASE_URL+`/api/admin/products/${productId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(updatedProduct), // JSON 형식으로 변환하여 전송
+            });
+
+            if (response.ok) {
+                toast.success('상품 정보가 성공적으로 수정되었습니다.', {
+                    position: "top-center",
+                    autoClose: 2000,
+                });
+            } else {
+                console.error('Error updating product');
+            }
+        } catch (error) {
+            console.error('Error updating product:', error);
+        }
     };
 
     const handleCheckboxChange = (id) => {
@@ -198,3 +252,4 @@ function ProductOptionAdmin() {
 }
 
 export default ProductOptionAdmin;
+

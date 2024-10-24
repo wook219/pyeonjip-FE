@@ -12,6 +12,7 @@ function CreateProduct() {
     const [options, setOptions] = useState([{ name: '', price: '', quantity: '', imageUrl: '' }]);
     const [productImages, setProductImages] = useState([{ imageUrl: '' }]); // 상품 이미지 관리
     const navigate = useNavigate();
+    const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
 
     // 옵션 필드의 값 변경을 처리하는 함수
     const handleOptionChange = (index, field, value) => {
@@ -53,7 +54,19 @@ function CreateProduct() {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const { data } = await axiosInstance.get('/api/admin/category');
+                const response = await fetch(BASE_URL+'/api/admin/category', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch category data');
+                }
+
+                const data = await response.json(); // JSON 데이터를 파싱하여 변수에 저장
                 setCategories(data); // 자식 카테고리 목록 설정
                 console.log("Fetched categories:", data);
             } catch (error) {
@@ -65,7 +78,7 @@ function CreateProduct() {
     }, []);
 
     // 폼 제출 처리
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         // 상품 데이터 객체 생성
@@ -84,22 +97,34 @@ function CreateProduct() {
             })) : [] // 이미지가 없으면 빈 배열로 처리
         };
 
-        // 상품 생성 요청
-        axiosInstance.post('/api/admin/products', productData)
-            .then(response => {
-                toast.success('상품이 성공적으로 생성되었습니다.', {
-                    position: "top-center",
-                    autoClose: 2000,
-                });
-                navigate('/admin/product');
-            })
-            .catch(error => {
-                console.error('상품 생성 중 오류가 발생했습니다:', error);
-                toast.error('상품 생성 중 오류가 발생했습니다.', {
-                    position: "top-center",
-                    autoClose: 2000,
-                });
+        try {
+            // 상품 생성 요청
+            const response = await fetch(BASE_URL+'/api/admin/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(productData)  // 데이터를 JSON으로 변환하여 전송
             });
+
+            if (!response.ok) {
+                throw new Error('상품 생성 중 오류가 발생했습니다.');
+            }
+
+            const responseData = await response.json();
+            toast.success('상품이 성공적으로 생성되었습니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
+            navigate('/admin/product');
+        } catch (error) {
+            console.error('상품 생성 중 오류가 발생했습니다:', error);
+            toast.error('상품 생성 중 오류가 발생했습니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
+        }
     };
 
     return (
