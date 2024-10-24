@@ -23,7 +23,7 @@ export const fetchGetCategories = async () => {
 // ADMIN - 카테고리 삭제
 export const fetchDeleteCategory = async (categoryId) => {
     try {
-        const response = await fetch(BASE_URL + `/api/admin/category?categoryIds=${categoryId}`, {
+        await fetch(BASE_URL + `/api/admin/category?categoryIds=${categoryId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access')}`,
@@ -80,7 +80,6 @@ export const fetchGetOrders = async (page = 0, size = 5, sortField = 'createdAt'
                 'Content-Type': 'application/json',
             }
         });
-        await handleErrorResponse(response); // 에러 처리
         return await response.json();
     } catch (error) {
         await handleErrorResponse(error);

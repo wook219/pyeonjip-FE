@@ -144,7 +144,7 @@ const CategoryEditBox = ({
     };
 
     const handleDelete = async () => {
-        if (categoryId !== null) {
+        if (categoryId !== null && categoryId !== 0) {
             await onCategoryDeleted(categoryId);
             onCategoryCreated();
         } else {
