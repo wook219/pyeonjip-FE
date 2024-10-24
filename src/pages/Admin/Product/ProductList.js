@@ -6,12 +6,25 @@ import {toast} from "react-toastify"; // Axios 인스턴스 가져오기
 function ProductList({ products, setProducts }) {
     const [categories, setCategories] = useState([]); // 카테고리 상태 추가
     const navigate = useNavigate();
+    const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io/";
 
     // 카테고리 목록을 가져오는 함수
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const { data } = await axiosInstance.get('/api/admin/category');
+                const response = await fetch(BASE_URL+'/api/admin/category', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('카테고리 불러오기 실패');
+                }
+
+                const data = await response.json(); // JSON 응답 파싱
                 setCategories(data); // 자식 카테고리 목록 설정
                 console.log("Fetched categories:", data);
             } catch (error) {
@@ -27,19 +40,40 @@ function ProductList({ products, setProducts }) {
         const token = localStorage.getItem('token');
         if (window.confirm('정말로 이 상품을 삭제하시겠습니까?')) {
             try {
-                await axiosInstance.delete(`/api/admin/products/${productId}`, {
+                // 상품 삭제 요청
+                const deleteResponse = await fetch(`/api/admin/products/${productId}`, {
+                    method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                    },
+                        'Content-Type': 'application/json'
+                    }
                 });
+
+                if (!deleteResponse.ok) {
+                    throw new Error('상품 삭제 중 오류가 발생했습니다.');
+                }
+
                 toast.success('성공적으로 삭제되었습니다.', {
                     position: "top-center",
                     autoClose: 2000,
                 });
 
-                // 삭제 후 전체 상품 목록을 다시 가져오기
-                const response = await axiosInstance.get('/api/products/all');
-                setProducts(response.data); // 업데이트된 상품 목록으로 상태 설정
+                // 삭제 후 전체 상품 목록 다시 가져오기
+                const productsResponse = await fetch('/api/products/all', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!productsResponse.ok) {
+                    throw new Error('상품 목록을 불러오는 중 오류가 발생했습니다.');
+                }
+
+                const updatedProducts = await productsResponse.json();
+                setProducts(updatedProducts); // 업데이트된 상품 목록으로 상태 설정
+
             } catch (error) {
                 console.error('상품 삭제 중 오류가 발생했습니다:', error);
                 toast.error('상품 삭제 중 오류가 발생했습니다.', {
