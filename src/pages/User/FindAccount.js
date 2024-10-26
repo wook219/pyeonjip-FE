@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import logo from "../../logo.svg";
+import './FindAccount.css';
 
 function FindAccount() {
     const [name, setName] = useState('');
@@ -18,17 +19,20 @@ function FindAccount() {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/user/find?name=${name}&phoneNumber=${phoneNumber}`, {
+            const response = await fetch(`https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io/api/auth/find?name=${name}&phoneNumber=${phoneNumber}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                 }
             });
 
 
             if (response.ok) {
-                const email = await response.text(); // 서버에서 이메일 반환
-                navigate('/found', { state: { email } }); // 이메일을 다음 페이지로 전달
+                const data = await response.json(); // 서버에서 이메일 반환
+                const email = data.email;
+                const name = data.name;
+                navigate('/found', { state: { email, name } }); // 이메일을 다음 페이지로 전달
             } else if (response.status === 404) {
                 setErrorMessage('계정을 찾을 수 없습니다.');
             } else {
@@ -44,7 +48,7 @@ function FindAccount() {
     };
 
     return (
-        <div className="user-container h-100 d-flex justify-content-center align-items-center">
+        <div className="user-find-container h-100 d-flex justify-content-center align-items-center card border-0">
             <div className="col-md-6">
                 <div className="user-login-logo text-center mb-5">
                     <Link to="/"><img src={logo} alt="logo" width="140"/></Link>

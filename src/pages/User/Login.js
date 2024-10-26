@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import {Link, useLocation, useNavigate} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './User.css';
 import {syncWithLocal} from "../../utils/cartUtils";
@@ -11,6 +11,7 @@ function Login() {
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
     const { handleContextLogin } = useAuth();
 
     const validateEmail = (email) => {
@@ -35,7 +36,7 @@ function Login() {
             return;
         }
 
-        const response = await fetch('http://localhost:8080/login', {
+        const response = await fetch('https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io/api/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -56,9 +57,16 @@ function Login() {
                 localStorage.removeItem('cart');
 
 
-                //이전페이지로 리다이렉트
-                //Todo : 로그인 창에서 새로고침 할 시 좋지않은 유저경험... 수정필요
-                navigate(-1);
+                // 로그인 후 이전페이지로 리다이렉트
+                // 단, restrictedPages 내의 URL에 해당되면 홈으로 리다이렉트
+                const restrictedPages = ['/signup/result'];
+                const fromPage = location.state?.from || '/';  // 이전 페이지 경로
+                if (!restrictedPages.includes(fromPage)) {
+                    navigate(fromPage);
+                } else {
+                    navigate("/");  // 예외 페이지일 경우 메인 페이지로 리다이렉트
+                }
+
 
             } else {
                 setErrorMessage('Access 토큰을 가져오지 못했습니다.');
@@ -89,7 +97,7 @@ function Login() {
     }, []);
 
     return (
-        <div className="login-container d-flex flex-column align-items-center justify-content-start vh-100">
+        <div className="login-container d-flex flex-column align-items-center justify-content-start vh-100 card border-0">
             <div className="user-login-container">
                 <div className="user-login-logo text-center mb-5">
                     <Link to="/"><img src={logo} alt="logo" width="180"/></Link>
@@ -119,7 +127,7 @@ function Login() {
                 </form>
                 <div className="d-flex justify-content-between mb-5">
                     <Link to="/find" className="user-link">계정 찾기</Link>
-                    <Link to="/find" className="user-link">비밀번호 재설정</Link>
+                    <Link to="/reset" className="user-link">비밀번호 재설정</Link>
                     <Link to="/signup" className="user-link">회원가입</Link>
                 </div>
                 <hr className="mb-3"/>

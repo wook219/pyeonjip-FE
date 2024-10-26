@@ -1,30 +1,27 @@
-import React, { useState } from 'react';
-import './Search.css';
+import React, {useEffect, useState} from 'react';
 
-const Search = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [searchOption, setSearchOption] = useState('name');
+function Search({ setEmail, email }) {
+    const [searchKeyword, setSearchKeyword] = useState(email);
 
-    const handleSearch = () => {
-        console.log(`Searching for ${searchTerm} by ${searchOption}`);
+    const handleSearch = async (event) => {
+        const value = event.target.value;
+        setSearchKeyword(value);
+        setEmail(value);
     };
 
-    return (
-        <div className="search-container">
-            <select value={searchOption} onChange={(e) => setSearchOption(e.target.value)}>
-                <option value="">상품명</option>
-                <option value="">구매자</option>
-                <option value="">카테고리</option>
-            </select>
-            <input
-                type="text"
-                placeholder="검색어 입력"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button onClick={handleSearch}>검색하기</button>
-        </div>
-    );
-};
+    // email이 변경될 때마다 searchKeyword를 업데이트
+    useEffect(() => {
+        setSearchKeyword(email);
+    }, [email]);
 
+    return (
+        <input
+            type="text"
+            placeholder="유저 이메일로 검색..."
+            value={searchKeyword} // 여기서 searchKeyword 사용
+            onChange={handleSearch}
+            className="admin-order-search-input"
+        />
+    );
+}
 export default Search;

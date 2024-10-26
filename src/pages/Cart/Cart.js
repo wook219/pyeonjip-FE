@@ -12,6 +12,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import {useAuth} from "../../context/AuthContext";
 import {useCart} from "../../context/CartContext";
+import {toast, ToastContainer} from "react-toastify";
 
 const ANIMATION_DURATION = 400;
 
@@ -19,6 +20,7 @@ function CartApp() {
     const [coupons, setCoupons] = useState([]);
     const [couponDiscount, setCouponDiscount] = useState(0);
     const [isCouponApplied, setIsCouponApplied] = useState(false);
+    const [couponId, setCouponId] = useState(null);
     const [totalPrice, setTotalPrice] = useState(0);
     const [previousTotal, setPreviousTotal] = useState(0);
     const [itemCount, setItemCount] = useState(0);
@@ -28,12 +30,13 @@ function CartApp() {
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
 
-    const { isLogin, email, setIsLogin } = useAuth();
+    const { isLoggedIn, email, setIsLoggedIn } = useAuth();
     const { items, setItems, loadCartData } = useCart();
+    const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
 
     // 쿠폰 데이터 로드
     useEffect(() => {
-        fetch('http://localhost:8080/api/coupon')
+        fetch(BASE_URL + '/api/coupon')
             .then((response) => response.json())
             .then((coupons) => {
                 setCoupons(coupons);
@@ -57,7 +60,11 @@ function CartApp() {
         if (isNaN(validatedValue) || validatedValue < min) {
             validatedValue = 0;
         } else if (validatedValue > maxQuantity) {
-            alert(`보유 재고가 ${maxQuantity}개 입니다.`);
+            toast.warn(`보유 재고가 ${maxQuantity}개 입니다.`,{
+                position: "top-center",
+                autoClose: 2000,
+            });
+            //alert(`보유 재고가 ${maxQuantity}개 입니다.`);
             validatedValue = maxQuantity;
         }
         const updatedItems = [...items];
@@ -65,7 +72,7 @@ function CartApp() {
         setItems(updatedItems);
 
 
-        if (isLogin) {// 로그인 상태일 때 수량 변경 API 호출
+        if (isLoggedIn) {// 로그인 상태일 때 수량 변경 API 호출
             const cartItem = {
                 optionId: updatedItems[index].optionId,
                 quantity: updatedItems[index].quantity,
@@ -121,20 +128,33 @@ function CartApp() {
         const coupon = coupons.find(c => c.code === couponCode);
 
         if (!coupon) {
-            return alert('유효하지 않은 쿠폰 코드입니다.');
+            return toast.warn('유효하지 않은 코드입니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
         }
         if (!coupon.active) {
-            return alert('이미 사용한 쿠폰입니다.');
+            return toast.warn('이미 사용한 코드입니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
         }
 
         const expiryDate = new Date(coupon.expiryDate);
         const currentDate = new Date();
         if (currentDate > expiryDate) {
-            return alert('만료된 쿠폰입니다.');
+            return toast.warn('만료된 코드입니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
         }
         setCouponDiscount(coupon.discount);
         setIsCouponApplied(true);
-        alert(`쿠폰이 적용되었습니다: ${coupon.discount}% 할인`);
+        setCouponId(coupon.id);
+        toast.success(`쿠폰이 적용되었습니다: ${coupon.discount}% 할인`, {
+            position: "top-center",
+            autoClose: 2000,
+        });
     };
 
     // 쿠폰 적용
@@ -157,10 +177,10 @@ function CartApp() {
 
             if (updatedCartItems.length < 0) {
                 return;
-            } else if (isLogin === false) {
+            } else if (isLoggedIn === false) {
                 // 로컬 스토리지에 업데이트된 장바구니 저장
                 updateLocalStorage(updatedCartItems);
-            } else if (isLogin) {
+            } else if (isLoggedIn) {
                 deleteCartItem(email, targetOptionId);
             }
 
@@ -180,7 +200,7 @@ function CartApp() {
             const clearedItems = [];
             setItems(clearedItems);
 
-            if (isLogin === false) {
+            if (isLoggedIn === false) {
                 // 로컬 스토리지에서 장바구니 비우기
                 updateLocalStorage([]);
             } else {
@@ -200,7 +220,7 @@ function CartApp() {
     const handleCheckout = async (e) => {
         e.preventDefault(); // 기본 폼 제출 방지
 
-        if (!isLogin) {
+        if (!isLoggedIn) {
             setShowModal(true); // 모달 표시
             return;
         }
@@ -211,38 +231,41 @@ function CartApp() {
             orderDetails: items.map(item => ({
                 productName: item.name,
                 productDetailId: item.optionId,
+                productDetailName: item.optionName,
                 quantity: item.quantity,
                 productPrice: item.price,
                 productImage: item.url,
             })),
             cartTotalPrice: totalPrice,
+            couponId: couponId
         };
         console.log(checkoutData);
-        const response = await fetch('http://localhost:8080/api/orders/checkout', {
+        const response = await fetch(BASE_URL + '/api/orders/checkout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access')}`
             },
             body: JSON.stringify(checkoutData),
         });
         if (response.ok || response.status === 204) {
             const orderSummary = await response.json();
-            console.log('체크아웃 완료');
-            navigate('/order', { 
+            navigate('/order', {
                 state: { 
                     orderSummary: orderSummary, 
                     cartItems: items, 
-                    email: email
+                    email: email,
+                    couponId: couponId
                 },
              });// 결제 페이지로 이동
         } else {
             const errorData = await response.json();
-            console.error(`체크아웃 실패 ${errorData}`);
         }
     };
     return (
         <>
-        <section className="container-fluid" style={{width: '110%', marginTop: '10vh'}}>
+        <section className="container-fluid" style={{marginTop: '10vh'}}>
+            <ToastContainer />
             <div className="row d-flex justify-content-between align-items-end h-100">
                 <div className="col-12 col-xl-12">
                     <div className="card border-1 card-registration card-registration-2">

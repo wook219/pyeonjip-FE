@@ -7,7 +7,6 @@ import {useAuth} from "../../context/AuthContext";
 import {useCart} from "../../context/CartContext";
 
 const ANIMATION_DURATION = 400;
-const BUTTON_WHITELIST = ['/login', '/chat', '/order', '/signup', '/signup/result', '/find', '/found'];
 
 const SidePanelApp = () => {
     const [isCartOpen, setCartOpen] = useState(false);
@@ -16,8 +15,9 @@ const SidePanelApp = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { isLogin, email, setIsLogin, handleContextLogout } = useAuth();
+    const { isLoggedIn, email, setIsLoggedIn, handleContextLogout } = useAuth();
     const { items, setItems, loadCartData } = useCart();
+    const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
 
     useEffect(() => {
         updateTotalPrice(items);
@@ -26,7 +26,7 @@ const SidePanelApp = () => {
     // 로그아웃 핸들러
     const handleLogout = async () => {
         try {
-            const response = await fetch('http://localhost:8080/logout', {
+            const response = await fetch(BASE_URL + '/api/auth/logout', {
                 method: 'POST',
                 credentials: 'include',
             });
@@ -39,8 +39,24 @@ const SidePanelApp = () => {
                 setItems([]);
                 //navigate('/');
                 loadCartData();
-                console.log('로그아웃');
-                window.location.reload();
+
+                const restrictedPages = ['/signup/result'];
+                const fromPage = location.state?.from || '/';  // 이전 페이지 경로
+
+                // 현재 경로가 "/admin"으로 시작하는지 확인
+                if (window.location.pathname.startsWith("/admin")) {
+                    navigate("/");  // "/admin" 경로일 경우 "/"로 리다이렉트
+                } else if (!restrictedPages.includes(fromPage)) {
+                    navigate(fromPage);  // 이전 페이지로 리다이렉트
+                } else {
+                    navigate("/");  // 예외 페이지일 경우 메인 페이지로 리다이렉트
+                }
+
+// 리다이렉트가 발생하지 않았을 때 reload 실행하기 - 안씀
+//                 if (!window.location.pathname.startsWith("/admin")) {
+//                     console.log('로그아웃');
+//                     window.location.reload();
+//                 }
             }
         } catch (error) {
             console.error('로그아웃 중 오류 발생:', error);
@@ -81,7 +97,7 @@ const SidePanelApp = () => {
         updatedItems[index].quantity = validatedValue;
         setItems(updatedItems);
 
-        if (isLogin) {
+        if (isLoggedIn) {
             const cartItem = {
                 optionId: updatedItems[index].optionId,
                 quantity: updatedItems[index].quantity,
@@ -102,9 +118,9 @@ const SidePanelApp = () => {
 
             if (updatedCartItems.length < 0) {
                 return;
-            } else if (isLogin === false) {
+            } else if (isLoggedIn === false) {
                 updateLocalStorage(updatedCartItems);
-            } else if (isLogin) {
+            } else if (isLoggedIn) {
                 deleteCartItem(email, targetOptionId);
             }
             setAnimatedItems((prevAnimatedItems) => prevAnimatedItems.filter((i) => i !== index));
@@ -140,11 +156,8 @@ const SidePanelApp = () => {
         navigate('/mypage');
     };
 
-    const isButtonVisible = !BUTTON_WHITELIST.includes(location.pathname);
-
     return (
         <div className="App">
-            {isButtonVisible && (
             <div style={{
                 position: 'fixed',
                 right: '30px',
@@ -153,17 +166,17 @@ const SidePanelApp = () => {
                 flexDirection: 'column',
                 gap: '10px'
             }}>
-                {isLogin ? (
+                {isLoggedIn ? (
                     <>
                         <span
                             className="text-dark"
-                            style={{ cursor: 'pointer', fontSize: '14px', fontWeight: 'semibold' }}
+                            style={{cursor: 'pointer', fontSize: '14px', fontWeight: 'semibold'}}
                             onClick={goToMyPage}>
                             마이페이지
                         </span>
                         <span
                             className="text-dark"
-                            style={{ cursor: 'pointer', fontSize: '14px', fontWeight: 'semibold' }}
+                            style={{cursor: 'pointer', fontSize: '14px', fontWeight: 'semibold'}}
                             onClick={handleLogout}>
                             로그아웃
                         </span>
@@ -171,7 +184,7 @@ const SidePanelApp = () => {
                 ) : (
                     <span
                         className="text-dark"
-                        style={{ cursor: 'pointer', fontSize: '14px', fontWeight: 'semibold' }}
+                        style={{cursor: 'pointer', fontSize: '14px', fontWeight: 'semibold'}}
                         onClick={goToLoginPage}>
                         로그인
                     </span>
@@ -180,18 +193,17 @@ const SidePanelApp = () => {
                 {location.pathname !== '/cart' && (
                     <span
                         className="text-dark"
-                        style={{ cursor: 'pointer', fontSize: '14px', fontWeight: 'semibold' }}
+                        style={{cursor: 'pointer', fontSize: '14px', fontWeight: 'semibold'}}
                         onClick={toggleCart}>
                         장바구니
                      </span>)}
             </div>
-                )}
             <div
                 className={`offcanvas offcanvas-end ${isCartOpen ? 'show' : ''}`}
                 tabIndex="-1"
                 style={{
                     visibility: isCartOpen ? 'visible' : 'hidden',
-                    width: '600px',
+                    width: '550px',
                     borderRadius: '10px 0 0 10px',
                 }}
             >
@@ -206,7 +218,7 @@ const SidePanelApp = () => {
                     {items.length === 0 ? (
                         <div>
                             <div className="text-center my-5">
-                                <i className="bi bi-emoji-frown my-5" style={{ fontSize: '7rem' }}></i>
+                                <i className="bi bi-emoji-frown my-5" style={{fontSize: '7rem'}}></i>
                                 <h2 className="my-4 bold">장바구니가 비어 있어요.</h2>
                                 <h6 className="text-muted">장바구니에 추가한 아이템이 보이지 않으면 로그인 해주세요.</h6>
                             </div>
@@ -262,8 +274,8 @@ const SidePanelApp = () => {
                 </div>
 
                 <div className="offcanvas-footer my-4">
-                    <div className="total-price d-flex justify-content-between mx-4">
-                        <h4>총 주문금액:</h4>
+                    <div className="total-price d-flex justify-content-between mx-4 my-4">
+                        <h4 style={{fontSize: '20px'}}>총 주문금액:</h4>
                         <h4>₩ {totalPrice.toLocaleString()}</h4>
                     </div>
                     <div className="d-flex justify-content-center">

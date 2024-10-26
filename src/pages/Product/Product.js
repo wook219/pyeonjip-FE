@@ -1,48 +1,64 @@
 import { debounce } from 'lodash';
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { addServerCart, addLocalCart } from "../../utils/cartUtils";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './Product.css';
-import { Modal } from 'react-bootstrap';
 import {useAuth} from "../../context/AuthContext";
 import {useCart} from "../../context/CartContext";
-import CommentSection from "./CommentSection";
+import ProductRate from "./ProductRate";
+import {toast, ToastContainer} from "react-toastify";
 
 function SandboxApp() {
     const [items, setItems] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState({});
-    const [showModal, setShowModal] = useState(false);
-    const [modalMessage, setModalMessage] = useState('');
     const [hoveredImages, setHoveredImages] = useState({});
     const { categoryId } = useParams();
     const [animationKey, setAnimationKey] = useState(0);
-    const MODAL_DURATION = 1000;
-
     const [currentPage, setCurrentPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
 
 
-    const { isLogin, email, setIsLogin } = useAuth();
+    const { isLoggedIn, email} = useAuth();
     const {loadCartData} = useCart();
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                if (!categoryId || categoryId === 'all') {
-                    const response = await fetch(`http://localhost:8080/api/products/all-pages?page=${currentPage}&size=8`);
+                if (!categoryId) {
+                    const response = await fetch(BASE_URL + `/api/products/all-pages?page=${currentPage}&size=9`);
                     const data = await response.json();
                     setItems(prevItems => currentPage === 0 ? data.content : [...prevItems, ...data.content]);
                     setHasMore(data.content.length > 0);
-
                 } else {
-                    const categoryResponse = await fetch(`http://localhost:8080/api/category?categoryIds=${categoryId}`);
-                    const categoryIds = await categoryResponse.json();
+                    let categoryResponse;
 
+                    try {
+                        categoryResponse = await fetch(BASE_URL + `/api/category?categoryIds=${categoryId}`);
+
+                        if (!categoryResponse.ok) {
+                            throw new Error(`Category fetch failed with status: ${categoryResponse.status}`);
+                        }
+                    } catch (error) {
+                        toast.error('잘못된 접근입니다.', {
+                            position: "top-center",
+                            autoClose: 2000,
+                        });
+                        setTimeout(() => navigate('/not-found'), 2000);
+                        return;
+                    }
+
+                    const categoryIds = await categoryResponse.json();
                     const queryParams = categoryIds.map(id => `categoryIds=${id}`).join('&');
-                    const productResponse = await fetch(`http://localhost:8080/api/products/categories?${queryParams}`);
+                    const productResponse = await fetch(BASE_URL + `/api/products/categories?${queryParams}`);
+                    if (productResponse.status === 404) {
+                        navigate('/not-found');
+                    }
+
                     const products = await productResponse.json();
                     setItems(products);
                     setHasMore(false);
@@ -50,8 +66,6 @@ function SandboxApp() {
             } catch (error) {
                 console.error('Error fetching products:', error);
             }
-            console.log('데이터 불러오기 완료.', items);
-            console.log('페이지 : ' , currentPage + 1, 'hasMore : ' , hasMore);
         };
 
         fetchProducts();
@@ -84,26 +98,24 @@ function SandboxApp() {
         };
     }, [hasMore, loading]);
 
-    const showModalMessage = (message) => {
-        setModalMessage(message);
-        setShowModal(true);
-        setTimeout(() => setShowModal(false), MODAL_DURATION);
-    };
-
     const addToCart = (item) => {
         const selectedDetail = selectedOptions[item.id] || item.productDetails[0];
         const cartItem = {
             optionId: selectedDetail.id,
-            quantity: item.quantity,
+            quantity: 1,
         };
 
-        if (isLogin) {
+        if (isLoggedIn) {
             addServerCart(cartItem, email);
         } else {
             addLocalCart(cartItem, selectedDetail);
         }
         loadCartData();
-        showModalMessage(`${item.name}의 ${selectedDetail.name}이(가) 장바구니에 추가되었습니다.`);
+        toast.info(`${item.name}이(가) 장바구니에 추가되었습니다.`,{
+            position: "top-center",
+            autoClose: 3000,
+            style: { width: "400px" }
+        });
     };
 
     const handleOptionSelect = (itemId, detail) => {
@@ -114,8 +126,8 @@ function SandboxApp() {
     };
 
     const groupedItems = [];
-    for (let i = 0; i < items.length; i += 4) {
-        groupedItems.push(items.slice(i, i + 4));
+    for (let i = 0; i < items.length; i += 3) {
+        groupedItems.push(items.slice(i, i + 3));
     }
 
     const handleMouseEnter = (itemId, mainImage) => {
@@ -135,12 +147,13 @@ function SandboxApp() {
 
     return (
         <section key={animationKey}>
-            <div className="container" style={{ width: '100%', marginTop: '10vh' }}>
+            <ToastContainer />
+            <div className="container" style={{ width: '100%'}}>
                 <div className="row d-flex justify-content-center align-items-center h-100">
                     <div className="card-body p-3">
                         <div className="row g-0">
                             <div className="col-lg-12">
-                                <div className="p-1">
+                                <div className="p-3">
                                     {groupedItems.map((group, groupIndex) => (
                                         <React.Fragment key={groupIndex}>
                                             <div className="row">
@@ -150,11 +163,12 @@ function SandboxApp() {
 
                                                     return (
                                                         <div
-                                                            className="card col-md-3 col-xl-3 border-0"
+                                                            className="card col-md-3 col-xl-4 border-0"
                                                             key={item.id}
-                                                            style={{ animationDelay: `${(groupIndex * 4 + itemIndex) * 0.1}s` }}
+                                                            style={{ animationDelay: `${(groupIndex * 3 + itemIndex) * 0.1}s` }}
                                                         >
                                                             <div>
+
                                                                 <Link to={`/category/${categoryId}/product-detail?productId=${item.id}&optionId=${selectedDetail.id}`}>
                                                                     <img
                                                                         src={hoveredImage}
@@ -166,40 +180,55 @@ function SandboxApp() {
                                                                         onMouseLeave={() => handleMouseLeave(item.id)}
                                                                     />
                                                                 </Link>
-                                                                <div className="card-body">
-                                                                    <Link to={`/category/${categoryId}/product-detail?productId=${item.id}&optionId=${selectedDetail.id}`}>
-                                                                        <h6 className="card-title fw-bold">{item.name}</h6>
-                                                                        <h6>{selectedDetail.name}</h6>
-                                                                        <h5 className="fw-bolder">
-                                                                            ￦{selectedDetail.price.toLocaleString()}
-                                                                        </h5>
-                                                                        <CommentSection productId={item.id} />
-                                                                    </Link>
-                                                                    <div className="my-3">
-                                                                        <h6 style={{ fontSize: '14px' }}>옵션</h6>
-                                                                        <div className="thumbnail-container d-flex mb-3 gap-2">
-                                                                            {item.productDetails.map((detail, index) => (
-                                                                                <div key={index} style={{ position: 'relative' }}>
-                                                                                    <img
-                                                                                        src={detail.mainImage}
-                                                                                        alt={`Thumbnail ${index + 1}`}
-                                                                                        className="thumbnail-image"
-                                                                                        style={{ width: '50px', cursor: 'pointer' }}
-                                                                                        onClick={() =>
-                                                                                            handleOptionSelect(item.id, detail)
-                                                                                        }
-                                                                                    />
-                                                                                </div>
-                                                                            ))}
+                                                                <div className="d-flex justify-content-between">
+                                                                    <div className="card-body">
+                                                                        <Link
+                                                                            to={`/category/${categoryId}/product-detail?productId=${item.id}&optionId=${selectedDetail.id}`}>
+                                                                            <h6 className="card-title fw-bolder" style={{fontSize: '14px'}}>{item.name}</h6>
+                                                                            <h6 style={{fontSize: '12px'}}>{selectedDetail.name}</h6>
+                                                                            <h6 className="fw-bolder">
+                                                                                ￦{selectedDetail.price.toLocaleString()}
+                                                                            </h6>
+                                                                            <ProductRate productId={item.id}/>
+                                                                        </Link>
+                                                                        <div>
+                                                                            <div
+                                                                                className="thumbnail-container d-flex mb-3 gap-2">
+                                                                                {item.productDetails.map((detail, index) => (
+                                                                                    <div key={index}
+                                                                                         style={{position: 'relative'}}>
+                                                                                        <img
+                                                                                            src={detail.mainImage}
+                                                                                            alt={`Thumbnail ${index + 1}`}
+                                                                                            className="thumbnail-image"
+                                                                                            style={{
+                                                                                                width: '45px',
+                                                                                                cursor: 'pointer'
+                                                                                            }}
+                                                                                            onClick={() =>
+                                                                                                handleOptionSelect(item.id, detail)
+                                                                                            }
+                                                                                        />
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="d-flex justify-content-end">
+                                                                            <button
+                                                                                className="btn btn-dark btn-sm col-xl-12  rounded-1"
+                                                                                onClick={() => addToCart(item)}>
+                                                                                <i className="bi bi-cart mx-1"
+                                                                                   style={{
+                                                                                       fontSize: '1rem',
+
+                                                                                   }}></i>
+
+                                                                            </button>
                                                                         </div>
                                                                     </div>
-                                                                    <h6
-                                                                        onClick={() => addToCart(item)}
-                                                                        style={{ fontSize: '14px', color: 'black', cursor: 'pointer' }}>
-                                                                        장바구니에 추가
-                                                                    </h6>
                                                                 </div>
                                                             </div>
+                                                            <hr/>
                                                         </div>
                                                     );
                                                 })}
@@ -219,10 +248,6 @@ function SandboxApp() {
                     </div>
                 </div>
             </div>
-
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
-                <Modal.Body>{modalMessage}</Modal.Body>
-            </Modal>
         </section>
     );
 }
