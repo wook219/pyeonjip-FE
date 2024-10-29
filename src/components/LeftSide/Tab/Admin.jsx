@@ -1,7 +1,9 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import ToggleIcon from '../ToggleIcon/ToggleIcon';
+import { useLocation } from "react-router-dom";
 
 function Admin() {
+    const location = useLocation();
     const [expandedMenus, setExpandedMenus] = useState({
         ORDER: false,
         PRODUCT: false,
@@ -36,7 +38,7 @@ function Admin() {
                 label="CATEGORY"
                 to="/admin/category"
                 isExpanded={expandedMenus.CATEGORY}
-                onToggle={()=> handleToggle('CATEGORY')}
+                onToggle={() => handleToggle('CATEGORY')}
                 hasChildren={false}
             />
             <ToggleIcon

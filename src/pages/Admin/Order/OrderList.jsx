@@ -1,57 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import OrderItem from './OrderItem';
 
-function OrderList({ orders = [] }) { // orders를 props로 받아옵니다.
-    const [selectedOrders, setSelectedOrders] = useState({});
-    const [selectAll, setSelectAll] = useState(false);
-
-    const handleSelectOrder = (orderId) => {
-        setSelectedOrders((prev) => ({
-            ...prev,
-            [orderId]: !prev[orderId],
-        }));
-    };
-
-    const handleSelectAll = () => {
-        const newSelectedState = {};
-        orders.forEach(order => {
-            newSelectedState[order.id] = !selectAll;
-        });
-        setSelectedOrders(newSelectedState);
-        setSelectAll(!selectAll);
-    };
-
-    const handleDeleteSelected = () => {
-        const remainingOrders = orders.filter(order => !selectedOrders[order.id]);
-        console.log("선택된 주문 삭제:", selectedOrders);
-        console.log("남은 주문:", remainingOrders);
-    };
-
+function OrderList({ orders, onDelete }) {
     return (
-        <div className="admin-order-list">
-            <div className="admin-order-list-header">
-                <input
-                    type="checkbox"
-                    checked={selectAll}
-                    onChange={handleSelectAll}
-                />
-                <button className="admin-order-delete-button" onClick={handleDeleteSelected}>
-                    선택한 주문 삭제
-                </button>
+        <div>
+            <div className="admin-order-header">
+                <span style={{marginLeft: '10px', width: '200px'}}><strong>ID</strong></span>
+                <span style={{marginLeft: '25px', width: '400px'}}><strong>이름</strong></span>
+                <span style={{marginLeft: '23px'}}><strong>이메일</strong></span>
+                <span style={{marginLeft: '12px',width: '500px'}}><strong>전화번호</strong></span>
+                <span style={{marginLeft: '65px', width: '500px'}}><strong>주문상태</strong></span>
+                <span style={{marginLeft: '14px'}}><strong>주문일</strong></span>
+                <span style={{marginLeft: '3px'}}><strong>배송 상태</strong></span>
+                <span style={{}}><strong></strong></span>
             </div>
-            <ul className="admin-order-list-container">
-                {Array.isArray(orders) && orders.length > 0 ? (
-                    orders.map(order => (
-                        <OrderItem
-                            key={order.id}
-                            order={order}
-                            isSelected={!!selectedOrders[order.id]}
-                            onSelect={() => handleSelectOrder(order.id)}
-                        />
-                    ))
-                ) : (
-                    <li>주문이 없습니다.</li>
-                )}
+            <ul className="admin-order-list">
+                {orders.map((order) => (
+                    <OrderItem
+                        key={order.id}
+                        order={order}
+                        onDelete={onDelete}
+                    />
+                ))}
             </ul>
         </div>
     );

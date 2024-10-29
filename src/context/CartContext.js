@@ -3,18 +3,19 @@ import { fetchCartDetails } from '../utils/cartUtils';
 import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
+const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
 
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
     const [items, setItems] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
-    const { isLogin, email } = useAuth();
+    const { isLoggedIn, email } = useAuth();
 
     const loadCartData = useCallback(async () => {
         try {
-            if (isLogin) {
-                const response = await fetch(`http://localhost:8080/api/cart?email=${email}`);
+            if (isLoggedIn) {
+                const response = await fetch(BASE_URL + `/api/cart?email=${email}`);
                 const cartDetailDtos = await response.json();
                 setItems(cartDetailDtos);
                 console.log('Cart 동기화 완료:', cartDetailDtos);
@@ -31,11 +32,11 @@ export const CartProvider = ({ children }) => {
         } catch (error) {
             console.error('Error fetching cart data:', error);
         }
-    }, [isLogin, email]);
+    }, [isLoggedIn, email]);
 
     useEffect(() => {
         loadCartData();
-    }, [loadCartData, isLogin]);
+    }, [loadCartData, isLoggedIn]);
 
     return (
         <CartContext.Provider value={{

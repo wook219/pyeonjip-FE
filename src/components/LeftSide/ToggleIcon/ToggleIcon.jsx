@@ -1,16 +1,14 @@
 import { NavLink } from 'react-router-dom';
 
 function ToggleIcon({ label, to, isExpanded, onToggle, hasChildren }) {
-
     return (
-
-        <div onClick={onToggle} style={{ marginBottom: '10px' }}>
+        <div style={{ marginBottom: '10px' }}>
             <NavLink
                 to={to}
                 style={({ isActive }) => ({
                     fontWeight: isActive ? 'bold' : 'normal',
-                    textDecoration: 'none',
                 })}
+                onClick={hasChildren ? onToggle : undefined}
             >
                 {hasChildren ? (
                     <span className='tapMark'>{isExpanded ? '-' : '+'}</span>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../../utils/axiosInstance';  // Axios 인스턴스 가져오기
 import './ProductAdmin.css';
+import {toast} from "react-toastify";
 
 function CreateProduct() {
     const [productName, setProductName] = useState('');
@@ -10,13 +12,14 @@ function CreateProduct() {
     const [options, setOptions] = useState([{ name: '', price: '', quantity: '', imageUrl: '' }]);
     const [productImages, setProductImages] = useState([{ imageUrl: '' }]); // 상품 이미지 관리
     const navigate = useNavigate();
+    const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
+    const token = localStorage.getItem('access'); // 저장된 JWT 토큰 가져오기
 
     // 옵션 필드의 값 변경을 처리하는 함수
     const handleOptionChange = (index, field, value) => {
         const newOptions = [...options];
         newOptions[index][field] = value;
         setOptions(newOptions);
-        console.log("Updated options:", newOptions); // 상태 로그 추가
     };
 
     // 이미지 필드의 값 변경을 처리하는 함수
@@ -24,7 +27,6 @@ function CreateProduct() {
         const newImages = [...productImages];
         newImages[index].imageUrl = value;
         setProductImages(newImages);
-        console.log("Updated images:", newImages); // 상태 로그 추가
     };
 
     // 옵션 추가
@@ -49,16 +51,36 @@ function CreateProduct() {
         setProductImages(newImages);
     };
 
-    // 데이터베이스에서 카테고리 목록을 가져오는 함수
+    // 데이터베이스에서 자식 카테고리 목록을 가져오는 함수 (Axios 사용)
     useEffect(() => {
-        fetch("http://localhost:8080/api/category")
-            .then(response => response.json())
-            .then(data => setCategories(data))
-            .catch(error => console.error('카테고리 불러오기 실패:', error));
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch(BASE_URL+'/api/admin/category', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch category data');
+                }
+
+                const data = await response.json(); // JSON 데이터를 파싱하여 변수에 저장
+                setCategories(data); // 자식 카테고리 목록 설정
+                console.log("Fetched categories:", data);
+            } catch (error) {
+                console.error('카테고리 불러오기 실패:', error);
+            }
+        };
+
+        fetchCategories();
     }, []);
 
     // 폼 제출 처리
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         // 상품 데이터 객체 생성
@@ -77,30 +99,35 @@ function CreateProduct() {
             })) : [] // 이미지가 없으면 빈 배열로 처리
         };
 
-        console.log("Submitting product data:", productData); // 제출 전 상태 확인
+        try {
+            // 상품 생성 요청
+            const response = await fetch(BASE_URL+'/api/admin/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(productData)  // 데이터를 JSON으로 변환하여 전송
+            });
 
-        // 상품 생성 요청
-        fetch("http://localhost:8080/api/products", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(productData),
-        })
-        .then(response => {
             if (!response.ok) {
-                throw new Error('상품 생성 실패');
+                throw new Error('상품 생성 중 오류가 발생했습니다.');
             }
-            return response.json();
-        })
-        .then(data => {
-            alert('상품이 성공적으로 생성되었습니다.');
+
+            const responseData = await response.json();
+            toast.success('상품이 성공적으로 생성되었습니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
             navigate('/admin/product');
-        })
-        .catch(error => {
-            console.error(error);
-            alert('상품 생성 중 오류가 발생했습니다.');
-        });
+        } catch (error) {
+            console.error('상품 생성 중 오류가 발생했습니다:', error);
+            toast.error('상품 생성 중 오류가 발생했습니다.', {
+                position: "top-center",
+                autoClose: 2000,
+            });
+        }
     };
 
     return (
@@ -142,7 +169,7 @@ function CreateProduct() {
                         ))}
                     </select>
                 </div>
-
+                <hr></hr>
                 <h3>상품 옵션</h3>
                 {options.map((option, index) => (
                     <div key={index} className="form-group">
@@ -178,10 +205,11 @@ function CreateProduct() {
                             onChange={(e) => handleOptionChange(index, 'imageUrl', e.target.value)}
                             className="form-control"
                         />
-                        <button type="button" onClick={() => removeOption(index)} className="btn btn-danger">옵션 삭제</button>
+                        <button type="button" onClick={() => removeOption(index)} className="btn btn-secondary">옵션 삭제
+                        </button>
                     </div>
                 ))}
-
+                <hr></hr>
                 <h3>상품 이미지</h3>
                 {productImages.map((image, index) => (
                     <div key={index} className="form-group">
@@ -194,16 +222,18 @@ function CreateProduct() {
                             required
                             className="form-control"
                         />
-                        <button type="button" onClick={() => removeImage(index)} className="btn btn-danger">이미지 삭제</button>
+                        <button type="button" onClick={() => removeImage(index)} className="btn btn-secondary">이미지 삭제</button>
+
+
+
                     </div>
                 ))}
 
-                <button type="button" onClick={addImage} className="btn btn-primary">이미지 추가</button>
-
-                <button type="button" onClick={addOption} className="btn btn-primary">옵션 추가</button>
 
                 <div>
-                    <button type="submit" className="btn btn-success mt-4">상품 생성</button>
+                    <button type="button" onClick={addOption} className="btn btn-secondary">옵션 추가</button>
+                    <button type="button" onClick={addImage} className="btn btn-secondary">이미지 추가</button>
+                    <button type="submit" className="btn btn-secondary">상품 생성</button>
                 </div>
             </form>
         </div>

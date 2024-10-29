@@ -1,9 +1,3 @@
-.admin-order-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
 
 .admin-order-page * {
     margin: 0;
@@ -11,43 +5,59 @@
     box-sizing: border-box;
 }
 
-.admin-order-list {
-    margin: 20px;
+.admin-order-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+}
+.admin-order-pagination {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+
+/*.admin-order-header {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: space-between;*/
+/*    padding: 10px;*/
+
+/*    background-color: #343a40;*/
+/*    color: white;*/
+/*    width: 100%;*/
+/*    border: 1px solid #ccc;*/
+/*    margin-bottom: 10px;*/
+/*    border-radius: 5px;*/
+/*}*/
+.admin-order-header {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: flex-start;
+    width: 960px;
+    padding: 10px 10px;
+    border-bottom: 1px solid #eee;
+    color: white;
+    border-radius: 5px;
+    background-color: #343a40;
+    margin-bottom: 10px;
+}
+
+.admin-order-header span {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    /*margin-right: 120px;*/
+}
+
+.admin-order-header span {
+    margin: 5px 10px;
     width: 100%;
 }
 
-.admin-order-list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.admin-order-delete-button {
-    padding: 8px 12px;
-    background-color: #212529;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.admin-order-delete-button:hover {
-    background-color: #212529;
-}
-
-.admin-order-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px;
-    border: 1px solid #ddd;
-    margin-bottom: 10px;
-    border-radius: 4px;
-}
-
 .admin-order-item.selected {
-    /*background-color: rgba(33, 37, 41, 0.03);*/
     border-color: #212529;
 }
 
@@ -55,17 +65,128 @@
     font-weight: bold;
 }
 
-input[type="checkbox"] {
-    width: 20px;
+.admin-order-item button {
+    background-color: white;
+    color: black;
+    border: 1px solid #343a40;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-left: 5px;
     cursor: pointer;
-    accent-color: gray;
+    transition: background-color 0.3s ease;
 }
 
-input[type="checkbox"]:checked {
-    accent-color: #212529;
+.admin-order-item button:hover {
+    background-color: #343a40;
+    color: white;
 }
 
-input[type="checkbox"]:checked::before {
-    content: "";
-    background-color: gray;
+.admin-order-list {
+    margin: 0 auto; /* 중앙 정렬 */
+    list-style: none; /* 기본 리스트 스타일 제거 */
+    padding: 0; /* 기본 패딩 제거 */
+    width: 960px;
+}
+
+.admin-order-item {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 10px 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.admin-order-item span {
+    width: 100%;
+    margin: 5px 10px;
+}
+
+.admin-order-details {
+    border: 1px solid #ccc;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.admin-order-detail-item {
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding: 30px 10px;
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+}
+.admin-order-detail-item img {
+    width: 50px;
+    height: 50px;
+    margin-right: 70px;
+    margin-left: 10px;
+}
+
+.admin-order-detail-info {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+}
+.admin-order-detail-info span{
+    width: 100%;
+}
+
+.admin-order-detail-info span:last-child {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 20px 20px 20px 0;
+}
+
+.admin-order-detail-totalPrice {
+    /*flex-direction: column;*/
+    /*display: flex;*/
+    /*justify-content: flex-end;*/
+    /*align-items: center;*/
+    /*margin: 20px 28px 20px 0;*/
+}
+
+.admin-order-detail-totalPrice span {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 20px 28px 20px 0;
+}
+
+
+
+.admin-order-search-input {
+    padding-left: 10px;
+    width: 200px;
+    height: 35px;
+    border: 1px solid #999;
+    border-radius: 0.3rem;
+}
+
+.admin-order-search-input::placeholder {
+    color: #999;
+}
+
+.admin-order-search-input:focus {
+    border-color: #212121;
+    border-width: 1px;
+    outline: none;
+}
+
+.form-select {
+    border-color: #999;
+    outline: none;
+}
+
+.form-select:focus {
+    border-color: #212121;
+    border-width: 1px;
+    box-shadow: none;
 }

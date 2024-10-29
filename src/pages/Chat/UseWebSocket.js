@@ -1,9 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
 const useWebSocket = (chatRoomId, onMessageReceived, onMessageUpdated, onMessageDeleted, userEmail) => {
   const [client, setClient] = useState(null);
+  const navigate = useNavigate();
+  const [currentRoom, setCurrentRoom] = useState(null);
 
   useEffect(() => {
     if (!chatRoomId || !userEmail) return;
@@ -15,7 +18,7 @@ const useWebSocket = (chatRoomId, onMessageReceived, onMessageUpdated, onMessage
     }
 
     const stompClient = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+      webSocketFactory: () => new SockJS('https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io/ws'),
       connectHeaders: {
         Authorization: `Bearer ${token}`,
         chatRoomId: chatRoomId
@@ -45,7 +48,15 @@ const useWebSocket = (chatRoomId, onMessageReceived, onMessageUpdated, onMessage
             onMessageDeleted(deletedMessageId);
           }
         });
+
+        stompClient.subscribe(`/topic/chat-room-closed/${chatRoomId}`, (message) => {
+          const closedRoom = JSON.parse(message.body);
+          // 상대방의 채팅방도 종료 처리
+          setCurrentRoom(prev => ({...prev, status: 'CLOSED'}));
+          navigate('/');
+        });
       },
+
       onStompError: (frame) => {
         console.error('Broker reported error: ' + frame.headers['message']);
         console.error('Additional details: ' + frame.body);
