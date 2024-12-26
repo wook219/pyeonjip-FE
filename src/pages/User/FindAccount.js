@@ -19,7 +19,7 @@ function FindAccount() {
         }
 
         try {
-            const response = await fetch(`http://43.202.33.182:8080/api/auth/find?name=${name}&phoneNumber=${phoneNumber}`, {
+            const response = await fetch(`http://43.203.127.251:8080/api/auth/find?name=${name}&phoneNumber=${phoneNumber}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

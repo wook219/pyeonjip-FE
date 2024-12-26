@@ -58,7 +58,7 @@ const isAccessTokenValid = (token) => {
 // 토큰 재발급
 const reissueToken = async () => {
     try {
-        const response = await fetch('http://43.202.33.182:8080/api/auth/reissue', {
+        const response = await fetch('http://43.203.127.251:8080/api/auth/reissue', {
             method: 'POST',
             credentials: 'include' // 쿠키와 함께 요청
         });

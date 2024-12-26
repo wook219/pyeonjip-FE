@@ -36,7 +36,7 @@ function Login() {
             return;
         }
 
-        const response = await fetch('http://43.202.33.182:8080/api/auth/login', {
+        const response = await fetch('http://43.203.127.251:8080/api/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

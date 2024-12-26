@@ -18,7 +18,7 @@ const useWebSocket = (chatRoomId, onMessageReceived, onMessageUpdated, onMessage
     }
 
     const stompClient = new Client({
-      webSocketFactory: () => new SockJS('http://43.202.33.182:8080/ws'),
+      webSocketFactory: () => new SockJS('http://43.203.127.251:8080/ws'),
       connectHeaders: {
         Authorization: `Bearer ${token}`,
         chatRoomId: chatRoomId

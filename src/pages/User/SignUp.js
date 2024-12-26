@@ -27,7 +27,7 @@ function SignUp() {
         // 전화번호를 세 파트로 나눈 값을 결합하여 하나의 전화번호로 만듦
         const phoneNumber = `${phoneNumberPart1}${phoneNumberPart2}${phoneNumberPart3}`;
 
-        const response = await fetch('http://43.202.33.182:8080/api/user/signup', {
+        const response = await fetch('http://43.203.127.251:8080/api/user/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

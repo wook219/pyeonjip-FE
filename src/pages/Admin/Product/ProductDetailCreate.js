@@ -12,7 +12,7 @@ function ProductDetailCreate() {
         quantity: 0,
         mainImage: ''
     });
-    const BASE_URL = "http://43.202.33.182:8080";
+    const BASE_URL = "http://43.203.127.251:8080";
 
     // 입력값 변경 핸들러
     const handleChange = (e) => {

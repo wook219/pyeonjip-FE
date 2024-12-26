@@ -1,5 +1,5 @@
 import {getUserEmail} from "./authUtils";
-const BASE_URL = "http://43.202.33.182:8080";
+const BASE_URL = "http://43.203.127.251:8080";
 
 export const addServerCart = (cart, email) => {
 // 로그인 상태: 서버로 장바구니 항목 추가
