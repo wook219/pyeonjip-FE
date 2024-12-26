@@ -79,7 +79,7 @@ const ChatPage = () => {
         const categories = {};
         chatRoomsData.forEach(room => {
           categories[room.id] = room.category;
-        });
+        }); 
         setChatRoomCategories(categories);
 
         setShowSetup(false);
