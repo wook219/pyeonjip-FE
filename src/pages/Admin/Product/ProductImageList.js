@@ -20,6 +20,8 @@ function ProductImageList({ images, selectedImages, handleCheckboxChange, handle
     return (
         <div className="product-image-list">
             <h2 className="mb-4">상품 이미지 목록</h2>
+
+            {/* 이미지 목록 */}
             {images.length > 0 ? (
                 <div>
                     <ul className="list-group">
@@ -58,24 +60,6 @@ function ProductImageList({ images, selectedImages, handleCheckboxChange, handle
             ) : (
                 <p className="text-muted">등록된 이미지가 없습니다.</p>
             )}
-
-            {/* 이미지 추가 입력창 */}
-            <div className="mt-4">
-                <h4>새로운 이미지 추가</h4>
-                <input
-                    type="text"
-                    value={newImageUrl}
-                    onChange={(e) => setNewImageUrl(e.target.value)}
-                    placeholder="이미지 URL 입력"
-                    style={{ marginRight: '10px', width: '250px' }}
-                />
-                <button
-                    className="btn-black"
-                    onClick={handleAddNewImage}
-                >
-                    이미지 추가
-                </button>
-            </div>
         </div>
     );
 }

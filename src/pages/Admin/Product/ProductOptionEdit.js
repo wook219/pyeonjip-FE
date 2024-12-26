@@ -13,13 +13,28 @@ function ProductOptionEdit() {
         quantity: 0,
         mainImage: ''
     });
+    const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
+    const token = localStorage.getItem('access'); // 저장된 JWT 토큰 가져오기
 
     // 옵션 정보 불러오기
     useEffect(() => {
         const fetchOption = async () => {
             try {
-                const response = await axiosInstance.get(`/api/products/details/${detailId}`); // 환경 변수 사용
-                setOption(response.data);
+                const response = await fetch(BASE_URL+`/api/products/details/${detailId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`, // Authorization 헤더 추가
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error fetching option');
+                }
+
+                const data = await response.json();
+                setOption(data); // 가져온 데이터를 상태로 설정
             } catch (error) {
                 console.error('Error fetching option:', error);
             }
@@ -30,16 +45,19 @@ function ProductOptionEdit() {
 
     // 옵션 정보 수정 함수
     const handleUpdate = async () => {
-        const token = localStorage.getItem('token'); // 저장된 JWT 토큰 가져오기
 
         try {
-            const response = await axiosInstance.put(`/api/admin/products/details/${detailId}`, option, {
+            const response = await fetch(BASE_URL+`/api/admin/products/details/${detailId}`, {
+                method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`, // Authorization 헤더 추가
+                    'Content-Type': 'application/json', // JSON 형식으로 데이터 전송
+                    'Accept': 'application/json',
                 },
+                body: JSON.stringify(option), // option 객체를 JSON 형식으로 변환하여 전송
             });
 
-            if (response.status === 200) {
+            if (response.ok) {
                 navigate(-1); // 이전 페이지로 이동
             } else {
                 console.error('Error updating option', response.status);
@@ -104,3 +122,4 @@ function ProductOptionEdit() {
 }
 
 export default ProductOptionEdit;
+
