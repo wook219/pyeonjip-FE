@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ChatDashboard.css';
 import { fetchWithAuth } from '../../utils/authUtils'; // fetchWithAuth 함수 import
 
 function ChatDashboard({ onClose, onRoomActivated  }) {
+  const navigate = useNavigate();
 
   useEffect(() => {
   }, [onRoomActivated]);
@@ -50,7 +52,7 @@ function ChatDashboard({ onClose, onRoomActivated  }) {
         onRoomActivated(activatedRoom.id);
       } else {
         // 대체 로직: 직접 채팅방으로 이동
-        window.location.href = `/chat?chatRoomId=${activatedRoom.id}`;
+        navigate(`/chat?chatRoomId=${activatedRoom.id}`);
       }
     } catch (error) {
       alert('채팅방 입장에 실패했습니다: ' + error.message);

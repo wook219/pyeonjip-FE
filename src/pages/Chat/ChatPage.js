@@ -322,7 +322,7 @@ const ChatPage = () => {
     setMessages([]);
 
     if (category === '이전 문의 내역') {
-      window.location.href = '/chat';
+      navigate('/chat');
     } else if(category !== '이전 문의 내역' && currentRoom.status === 'CLOSED'){
       setCategory('이전 문의 내역');
     } else {

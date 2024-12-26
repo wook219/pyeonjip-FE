@@ -213,7 +213,7 @@ function CartApp() {
     };
 
     const handleLogin = () => {
-        window.location.href = "/login"; // 로그인 페이지로 이동
+        navigate("/login"); // 로그인 페이지로 이동
     };
 
     // 결제하기
