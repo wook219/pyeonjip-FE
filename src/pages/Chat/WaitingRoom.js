@@ -15,12 +15,9 @@ const WaitingRoom = ({ room, onRoomActivated }) => {
         Authorization: `Bearer ${token}`
       },
       onConnect: () => {
-        console.log('Connected to WaitingRoom WebSocket');
         stompClient.subscribe(`/user/queue/chat-room-activated`, (message) => {
           const activatedRoom = JSON.parse(message.body);
-          console.log('Received activated room:', activatedRoom);
           if (activatedRoom.id === room.id) {
-            console.log('Calling onRoomActivated with:', activatedRoom.id);
             onRoomActivated(activatedRoom.id);
           }
         });

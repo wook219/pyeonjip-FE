@@ -51,7 +51,6 @@ const ChatPage = () => {
  
 
   const handleOpenChatDashboard = useCallback(() => {
-    console.log('Opening chat dashboard');
     if (isAdmin()) {
       setShowChatDashboard(true);
     } else {
@@ -60,13 +59,11 @@ const ChatPage = () => {
   }, [isAdmin, navigate]);
 
   const handleCloseChatDashboard = useCallback(() => {
-    console.log('Closing chat dashboard');
     setShowChatDashboard(false);
   }, []);
 
   const handleCategorySelect = async (selectedCategory) => {
     setCategory(selectedCategory);
-    console.log('Selected category:', selectedCategory);
 
     if (selectedCategory === '이전 문의 내역') {
       const userId = userEmail; // 실제 사용자 ID로 변경 필요
@@ -111,12 +108,10 @@ const ChatPage = () => {
         });
         if (!response.ok) throw new Error('Failed to create waiting room');
         const data = await response.json();
-        console.log('Created waiting room:', data);
         setCurrentRoom(data);
         setShowSetup(false);
         setIsViewingChatRoom(true);
       } catch (error) {
-        console.error('Error creating waiting room:', error);
         alert('대기방 생성에 실패했습니다.');
       } finally {
         setIsLoading(false);  // 로딩 상태 해제
@@ -125,7 +120,6 @@ const ChatPage = () => {
   };
 
   const handleMessageReceived = useCallback((message) => {
-    console.log('Received message in ChatPage:', message);
     setMessages((prevMessages) => {
       // 임시 메시지 찾기
       const tempIndex = prevMessages.findIndex(msg => 
@@ -185,7 +179,6 @@ const ChatPage = () => {
       });
       if (!response.ok) throw new Error('Failed to load chat messages');
       const chatMessages = await response.json();
-      console.log('Loaded messages:', chatMessages);
       const formattedMessages = chatMessages.map(msg => ({
         id: msg.id,
         text: msg.message,
@@ -204,13 +197,11 @@ const ChatPage = () => {
 
   const handleRoomSelect = useCallback(async (roomId) => {
     try {
-      console.log('Selecting room:', roomId);
       const response = await fetch(`/api/chat/chat-room/${roomId}`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('access')}` }
       });
       if (!response.ok) throw new Error('Failed to fetch chat room');
       const roomData = await response.json();
-      console.log('Fetched room data:', roomData);
       setCurrentRoom(roomData);
       setChatRoomId(roomId);
       setCategory(roomData.category);
@@ -218,7 +209,6 @@ const ChatPage = () => {
       await loadChatMessages(roomId);
       window.history.pushState(null, '', `/chat?chatRoomId=${roomId}`);
     } catch (error) {
-      console.error('Error fetching chat room:', error);
       alert('채팅방 정보를 불러오는데 실패했습니다.');
     }
   }, [loadChatMessages]);
@@ -226,7 +216,6 @@ const ChatPage = () => {
   
 
   const handleRoomActivated = useCallback((roomId) => {
-    console.log('Room activated:', roomId);
     if (roomId) {
       setCurrentRoom(prevRoom => {
         if (prevRoom && prevRoom.id === roomId) return prevRoom;
@@ -270,7 +259,6 @@ const ChatPage = () => {
       // 홈으로 이동
       navigate('/');
     } catch (error) {
-      console.error('Error closing chat room:', error);
       alert('채팅방 종료에 실패했습니다.');
     }
   };
@@ -288,7 +276,6 @@ const ChatPage = () => {
         const decodedToken = jwtDecode(token);
         setUserEmail(decodedToken.email);
         setUserRole(decodedToken.role);
-        console.log('User role:', decodedToken.role); // 로그 추가
       } catch (error) {
         console.error('토큰 디코딩 에러:', error);
       }
@@ -332,7 +319,6 @@ const ChatPage = () => {
     setSelectedRoomId(null);
     setChatRoomId(null);
     setMessages([]);
-    console.log('current Room : ', currentRoom);
 
     if (category === '이전 문의 내역') {
       window.location.href = '/chat';
@@ -394,7 +380,6 @@ const ChatPage = () => {
     e.preventDefault();
     const message = messages.find(msg => msg.id === messageId);
     if (message && message.sent) {
-      console.log("Context menu triggered for message ID:", messageId);
       setSelectedMessageId(messageId);
       setContextMenuPosition({ x: e.clientX, y: e.clientY });
       setShowContextMenu(true);

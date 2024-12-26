@@ -3,10 +3,8 @@ import './ChatDashboard.css';
 import { fetchWithAuth } from '../../utils/authUtils'; // fetchWithAuth 함수 import
 
 function ChatDashboard({ onClose, onRoomActivated  }) {
-  console.log('ChatDashboard received onRoomActivated:', onRoomActivated);
 
   useEffect(() => {
-    console.log('onRoomActivated:', onRoomActivated);
   }, [onRoomActivated]);
 
   const [waitingRooms, setWaitingRooms] = useState([]);
@@ -20,17 +18,13 @@ function ChatDashboard({ onClose, onRoomActivated  }) {
   const fetchWaitingRooms = async () => {
     try {
       const data = await fetchWithAuth('/api/chat/waiting-rooms');
-      console.log('Fetched waiting rooms:', data);
       setWaitingRooms(data);
     } catch (error) {
-      console.error('Error fetching waiting rooms:', error);
     }
   };
 
   const handleJoinRoom = async (roomId) => {
     try {
-      console.log('Joining room:', roomId);
-      
       const token = localStorage.getItem('access');
       if (!token) {
         throw new Error('인증 토큰이 없습니다.');
@@ -50,18 +44,14 @@ function ChatDashboard({ onClose, onRoomActivated  }) {
       }
   
       const activatedRoom = await response.json();
-      console.log('Activated room:', activatedRoom);
   
       if (activatedRoom && activatedRoom.id && typeof onRoomActivated === 'function') {
-        console.log('Calling onRoomActivated with room id:', activatedRoom.id);
         onRoomActivated(activatedRoom.id);
       } else {
-        console.error('onRoomActivated is not a function or activatedRoom is invalid', onRoomActivated, activatedRoom);
         // 대체 로직: 직접 채팅방으로 이동
         window.location.href = `/chat?chatRoomId=${activatedRoom.id}`;
       }
     } catch (error) {
-      console.error('Error joining room:', error);
       alert('채팅방 입장에 실패했습니다: ' + error.message);
     }
   };

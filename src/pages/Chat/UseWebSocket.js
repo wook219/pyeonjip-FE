@@ -24,9 +24,7 @@ const useWebSocket = (chatRoomId, onMessageReceived, onMessageUpdated, onMessage
         chatRoomId: chatRoomId
       },
       onConnect: () => {
-        console.log('STOMP connected');
         stompClient.subscribe(`/topic/messages/${chatRoomId}`, (message) => {
-          console.log('Received message from server:', message.body);
           const receivedMessage = JSON.parse(message.body);
           if (typeof onMessageReceived === 'function' && receivedMessage.message) {
             onMessageReceived(receivedMessage);
@@ -34,7 +32,6 @@ const useWebSocket = (chatRoomId, onMessageReceived, onMessageUpdated, onMessage
         });
         
         stompClient.subscribe(`/topic/message-updates/${chatRoomId}`, (update) => {
-          console.log('Received message update:', update.body);
           const updatedMessage = JSON.parse(update.body);
           if (typeof onMessageUpdated === 'function') {
             onMessageUpdated(updatedMessage);
@@ -42,7 +39,6 @@ const useWebSocket = (chatRoomId, onMessageReceived, onMessageUpdated, onMessage
         });
 
         stompClient.subscribe(`/topic/message-deletions/${chatRoomId}`, (deletion) => {
-          console.log('Received message deletion:', deletion.body);
           const deletedMessageId = JSON.parse(deletion.body);
           if (typeof onMessageDeleted === 'function') {
             onMessageDeleted(deletedMessageId);
