@@ -21,7 +21,7 @@ function ProductOptionAdmin() {
         description: '',
         category: ''
     });
-    const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
+    const BASE_URL = "http://3.38.100.100:8080";
 
     useEffect(() => {
         const fetchProductDetails = async () => {

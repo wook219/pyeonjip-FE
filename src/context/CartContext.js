@@ -3,7 +3,7 @@ import { fetchCartDetails } from '../utils/cartUtils';
 import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
-const BASE_URL = "https://dsrkzpzrzxqkarjw.tunnel-pt.elice.io";
+const BASE_URL = "http://3.38.100.100:8080";
 
 export const useCart = () => useContext(CartContext);
 
