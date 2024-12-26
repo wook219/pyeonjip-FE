@@ -1,5 +1,5 @@
 import axiosInstance from "../utils/axiosInstance";
-const BASE_URL = "http://3.38.100.100:8080";
+const BASE_URL = "http://43.202.33.182:8080";
 
 // 공통 에러 처리 함수
 const handleErrorResponse = async (error) => {

@@ -21,7 +21,7 @@ function ProductDetail() {
     const [comments, setComments] = useState([]);
     const { isLoggedIn, email} = useAuth();
     const {loadCartData} = useCart();
-    const BASE_URL = "http://3.38.100.100:8080";
+    const BASE_URL = "http://43.202.33.182:8080";
 
     const [product, setProduct] = useState({
         productImages: [],

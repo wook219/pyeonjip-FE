@@ -9,7 +9,7 @@ function ProductRate({ productId }) {
         const queryParams = new URLSearchParams(location.search);
         const idFromQuery = queryParams.get('productId');
         const idToFetch = productId || idFromQuery;
-        const BASE_URL = "http://3.38.100.100:8080";
+        const BASE_URL = "http://43.202.33.182:8080";
 
         if (idToFetch) {
             fetch(BASE_URL + `/api/comments/product-rating/${idToFetch}`)

@@ -9,7 +9,7 @@ function ProductAdmin() {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [currentPage, setCurrentPage] = useState(0);
     const pageSize = 5;
-    const BASE_URL = "http://3.38.100.100:8080";
+    const BASE_URL = "http://43.202.33.182:8080";
 
     // 대카테고리 목록 조회
     useEffect(() => {

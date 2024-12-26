@@ -8,7 +8,7 @@ import {toast} from "react-toastify";
 function Comment({ productId, setCommentUpdated, comments, setComments, email, isLoggedIn}) {
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [showInput, setShowInput] = useState(false);
-    const BASE_URL = "http://3.38.100.100:8080";
+    const BASE_URL = "http://43.202.33.182:8080";
 
     const handleAddComment = async ({ title, content, rating }) => {
         const comment = { title, content, productId, email, rating };

@@ -17,7 +17,7 @@ const SidePanelApp = () => {
 
     const { isLoggedIn, email, setIsLoggedIn, handleContextLogout } = useAuth();
     const { items, setItems, loadCartData } = useCart();
-    const BASE_URL = "http://3.38.100.100:8080";
+    const BASE_URL = "http://43.202.33.182:8080";
 
     useEffect(() => {
         updateTotalPrice(items);
