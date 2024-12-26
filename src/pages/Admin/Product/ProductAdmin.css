@@ -1,0 +1,72 @@
+/* 관리자 상품 관리 페이지 */
+.admin-product-page {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* 테이블 스타일 */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    padding: 12px 15px;
+    text-align: center; /* 텍스트 가운데 정렬 */
+    vertical-align: middle; /* 세로 가운데 정렬 */
+    border: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #333;
+    color: white;
+}
+
+.table tr:hover {
+    background-color: #f2f2f2;
+}
+
+/* 버튼 스타일 개선 */
+.btn-dark-gray {
+    background-color: #6c757d; /* 더 부드러운 회색 */
+    color: white;
+    border: 1px solid #6c757d;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-dark-gray:hover {
+    background-color: #5a6268; /* 호버 시 어두운 회색 */
+    color: #fff;
+}
+
+.btn-dark-gray:focus {
+    outline: none;
+}
+
+/* 테이블 셀 내부의 버튼을 가운데 정렬 */
+.table td .btn-dark-gray {
+    display: inline-block; /* flex 제거 */
+    text-align: center;
+    vertical-align: middle; /* 버튼 세로 중앙 정렬 */
+}
+
+.form-group{
+    margin-bottom: 20px;
+}
+
+.form-group label{
+    margin-bottom: 10px;
+}
+
+.form-control{
+    margin-bottom: 20px;
+}
+
+.btn-secondary{
+    margin-right : 10px
+}

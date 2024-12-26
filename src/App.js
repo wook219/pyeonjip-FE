@@ -1,25 +1,45 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import AppRouter from './pages/router/Router';
+import Footer from './components/Footer/Footer';
+import LeftSide from './components/LeftSide/LeftSide';
+import RightSide from './components/RIghtSide/RightSide'
+import HiddenUtils from "./utils/HiddenUtils";
+import {AuthProvider} from "./context/AuthContext";
+import {CartProvider} from "./context/CartContext";
+import ChatDashboardButton from './components/Chat/ChatDashboardButton';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
 
+    return (
+
+        <div className="app">
+            <AuthProvider>
+                <HiddenUtils whitelist={['/chat', '/signup', '/find', '/not-found']}>
+                    <div className='leftSide'>
+                        <LeftSide/>
+                    </div>
+                </HiddenUtils>
+                <CartProvider>
+                    <HiddenUtils whitelist={['/chat', '/login', '/signup', '/reset', '/reset/result/', 'order', '/find', '/not-found']}>
+                        <div className='rightSide'>
+                            <RightSide/>
+                        </div>
+                    </HiddenUtils>
+                    <div className='content'>
+                        <AppRouter/>
+                    </div>
+                </CartProvider>
+                <HiddenUtils whitelist={['/chat', '/login', '/signup', '/reset', '/reset/result', '/find', '/found', '/not-found']}>
+                    <div className='chatDashboardButton'>
+                        <ChatDashboardButton/>
+                    </div>
+                </HiddenUtils>
+            </AuthProvider>
+            <div className='footer'>
+                <Footer/>
+            </div>
+        </div>
+    );
+}
 export default App;
